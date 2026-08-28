@@ -155,7 +155,7 @@ export const database = {
       const list = Object.values(stats).map(item => {
         item.rate = item.total > 0 ? Math.round(((item.sudah + item.sebagian * 0.5) / item.total) * 100) : 0;
         return item;
-      });
+      }).sort((a, b) => b.rate - a.rate);
 
       setTimeout(() => resolve(list), 100);
     });
@@ -185,10 +185,12 @@ export const database = {
         stats[s.kecamatan][s.status]++;
       });
 
-      const list = Object.values(stats).map(item => {
-        item.rate = item.total > 0 ? Math.round((item.sudah / item.total) * 100) : 0;
-        return item;
-      });
+      const list = Object.values(stats)
+        .map(item => {
+          item.rate = item.total > 0 ? Math.round((item.sudah / item.total) * 100) : 0;
+          return item;
+        })
+        .sort((a, b) => b.rate - a.rate);
 
       setTimeout(() => resolve(list), 100);
     });
