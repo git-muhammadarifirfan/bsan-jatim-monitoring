@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #4A57C4;
+  --color-primary-dark: #333F91;
+  --color-accent: #6C7AE0;
+  --color-bg: #F4F5FB;
+  --color-surface: #FFFFFF;
+  --color-border: #E8E9F5;
+  --color-text-primary: #1C1B33;
+  --color-text-secondary: #8A8FA8;
+
+  --status-belum: #E5484D;
+  --status-sebagian: #F5A623;
+  --status-sudah: #2FB344;
+  --status-netral: #C7CBDE;
+
+  --shadow-card: 0 4px 20px rgba(28, 27, 51, 0.06);
+  --shadow-card-hover: 0 8px 30px rgba(28, 27, 51, 0.12);
+  --radius-card: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-secondary); }
+
+/* ─── Smooth Base Transitions for Hover/Interactive Only ─── */
+.transition-smooth {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+/* ─── Chart & Percentage Animation Keyframes ─── */
+@keyframes progressFill {
+  from { width: 0%; }
+}
+@keyframes ringDraw {
+  from { stroke-dashoffset: 215; }
+}
+
+/* Smooth percentage fill animation */
+.progress-bar-fill {
+  animation: progressFill 1s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Ring chart fill animation */
+.ring-animate {
+  transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: ringDraw 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Table row hover */
+.table-row-hover {
+  transition: background-color 0.15s ease;
+}
+.table-row-hover:hover {
+  background-color: var(--color-bg);
+}
