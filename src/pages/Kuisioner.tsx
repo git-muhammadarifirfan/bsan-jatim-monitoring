@@ -19,41 +19,44 @@ export interface QuestionItem {
 }
 
 const DEFAULT_QUESTIONS: QuestionItem[] = [
-  // Section 1
-  { id: 'q1', sectionId: 'sec1', text: 'Nama Responden', type: 'text', required: true },
-  { id: 'q2', sectionId: 'sec1', text: 'Jenis Kelamin', type: 'radio', options: ['Laki-laki', 'Perempuan'], required: true },
-  { id: 'q3', sectionId: 'sec1', text: 'Posisi / Jabatan', type: 'radio', options: ['Kepala Sekolah', 'Guru Kelas', 'Guru Mapel', 'Operator Sekolah'], required: true },
-  { id: 'q4', sectionId: 'sec1', text: 'NPSN Sekolah', type: 'text', required: true },
-  { id: 'q5', sectionId: 'sec1', text: 'Kabupaten / Kota', type: 'radio', options: ['Kab. Sidoarjo', 'Kota Batu', 'Kab. Tuban'], required: true },
+  // Section 1 — Identitas Responden
+  { id: 'q1', sectionId: 'sec1', text: '1. Nama Responden (Huruf Kapital)', type: 'text', required: true },
+  { id: 'q2', sectionId: 'sec1', text: '2. Jenis Kelamin', type: 'radio', options: ['Laki-Laki', 'Perempuan'], required: true },
+  { id: 'q3', sectionId: 'sec1', text: '3. Posisi / Jabatan Pekerjaan', type: 'radio', options: ['Kepala Sekolah', 'Guru Kelas 1', 'Guru Kelas 2', 'Guru Kelas 3', 'Guru Kelas 4', 'Guru Kelas 5', 'Guru Kelas 6', 'Guru PJOK', 'Guru PAI', 'Guru Seni & Budaya', 'Lainnya'], required: true },
+  { id: 'q4', sectionId: 'sec1', text: '4. Asal Sekolah (Nama Lengkap Sekolah)', type: 'text', required: true },
+  { id: 'q5', sectionId: 'sec1', text: '5. Kabupaten / Kota Wilayah', type: 'radio', options: ['Kab. Sidoarjo', 'Kota Batu', 'Kab. Tuban'], required: true },
 
-  // Section 2
-  { id: 'q6', sectionId: 'sec2', text: 'Apakah Bpk/Ibu sudah pernah mendapatkan materi modul BSAN?', type: 'radio', options: ['Ya', 'Belum'], required: true },
-  { id: 'q7', sectionId: 'sec2', text: 'Jika ya, siapa yang mengadakan pelatihan?', type: 'essay', required: false },
-  { id: 'q8', sectionId: 'sec2', text: 'Apakah Bpk/Ibu sudah mengimplementasikan modul BSAN?', type: 'radio', options: ['Sudah', 'Sebagian', 'Belum'], required: true },
-  { id: 'q9', sectionId: 'sec2', text: 'Saat implementasi, Bpk/Ibu mengajar di kelas berapa?', type: 'text', required: true },
+  // Section 2 — Identifikasi Pelatihan & Pelaksanaan
+  { id: 'q6', sectionId: 'sec2', text: '9. Apakah Bpk/Ibu sudah pernah mendapatkan materi modul BSAN (Budaya Sekolah Aman dan Nyaman)?', type: 'radio', options: ['Ya', 'Tidak'], required: true },
+  { id: 'q7', sectionId: 'sec2', text: '10. Jika ya, siapa yang mengadakan pelatihan?', type: 'radio', options: ['INOVASI - Dinas Pendidikan', 'Diseminasi KKG / KKKS', 'Pelatihan Internal Sekolah', 'Lainnya'], required: false },
+  { id: 'q8', sectionId: 'sec2', text: '11. Apakah Bpk/Ibu sudah mengimplementasikan modul BSAN?', type: 'radio', options: ['Ya, sudah seluruhnya', 'Ya, sebagian', 'Tidak'], required: true },
+  { id: 'q9', sectionId: 'sec2', text: '12. Saat implementasi modul BSAN, Bpk/Ibu mengajar di kelas berapa?', type: 'radio', options: ['Kelas Awal (1 - 3)', 'Kelas Tinggi (4 - 6)', 'Kepala Sekolah / Non-Mengajar'], required: true },
 
-  // Section 3
-  { id: 'q10', sectionId: 'sec3', text: 'Menurut Bpk/Ibu bagian mana dari modul yang cukup mudah penerapannya?', type: 'essay', required: true },
-  { id: 'q11', sectionId: 'sec3', text: 'Menurut Bpk/Ibu bagian mana dari modul yang cukup sulit penerapannya?', type: 'essay', required: true },
-  { id: 'q12', sectionId: 'sec3', text: 'Media apa saja yang telah Bpk/Ibu gunakan dalam pembelajaran?', type: 'text', required: true },
-  { id: 'q13', sectionId: 'sec3', text: 'Keaktifan murid saat implementasi modul BSAN (Skala 1 - 5)', type: 'rating', required: true },
+  // Section 3 — Implementasi Modul Kelas Awal & Tinggi
+  { id: 'q10', sectionId: 'sec3', text: '13/22. Menurut Bpk/Ibu bagian mana dari modul yang cukup mudah penerapannya?', type: 'radio', options: ['Alur 1: Mengenali Perasaan & Karakter Diri', 'Alur 2: Keunikan Diri & Persahabatan', 'Alur 3: Jaga Diri, Layar & Literasi', 'Seluruh Tema Mudah'], required: true },
+  { id: 'q11', sectionId: 'sec3', text: '14/23. Menurut Bpk/Ibu bagian mana dari modul yang cukup sulit penerapannya?', type: 'radio', options: ['Alur 1: Pengelolaan Emosi Kompleks', 'Alur 2: Kampanye & Pembiasaan Publik', 'Alur 3: Refleksi & Tindak Lanjut', 'Tidak Ada yang Sulit'], required: true },
+  { id: 'q12', sectionId: 'sec3', text: '15/24. Media pembelajaran apa saja yang telah Bpk/Ibu gunakan?', type: 'radio', options: ['Kartu Afirmasi & Roda Emosi', 'Video & LKPD Interaktif', 'Poster Menjaga Diri & Area Pribadi', 'Papan Ular Tangga & Puzzle Tubuhku', 'Buku Cerita & Stiker Emoji'], required: true },
+  { id: 'q13', sectionId: 'sec3', text: '16/25. Keaktifan murid saat implementasi modul BSAN', type: 'radio', options: ['Lebih dari 70% siswa terlibat aktif', '50% siswa terlibat aktif', 'Kurang dari 50% siswa terlibat aktif'], required: true },
 
-  // Section 4
-  { id: 'q14', sectionId: 'sec4', text: 'Apakah guru melakukan refleksi dengan murid?', type: 'radio', options: ['Ya', 'Tidak'], required: true },
-  { id: 'q15', sectionId: 'sec4', text: 'Jika ya, sebutkan temuan-temuan pokoknya', type: 'essay', required: false },
-  { id: 'q16', sectionId: 'sec4', text: 'Apakah guru melakukan refleksi dengan guru lain (KKG)?', type: 'radio', options: ['Ya', 'Tidak'], required: true },
-  { id: 'q17', sectionId: 'sec4', text: 'Jika ya, sebutkan temuan-temuan pokoknya', type: 'essay', required: false },
+  // Section 4 — Refleksi & Kesepakatan Kelas
+  { id: 'q14', sectionId: 'sec4', text: '17/28. Apakah guru melakukan refleksi dengan murid?', type: 'radio', options: ['Ya, tiap selesai alur', 'Ya, tiap selesai tema', 'Ya, tiap selesai aktivitas', 'Ya, setelah seluruhnya selesai', 'Tidak'], required: true },
+  { id: 'q15', sectionId: 'sec4', text: '18/29. Jika ya, sebutkan temuan-temuan pokoknya bersama murid', type: 'essay', required: false },
+  { id: 'q16', sectionId: 'sec4', text: '19/26. Apakah guru melakukan refleksi dengan guru lain (KKG)?', type: 'radio', options: ['Ya, tiap selesai alur', 'Ya, tiap selesai tema', 'Ya, tiap selesai aktivitas', 'Ya, setelah seluruhnya selesai', 'Tidak'], required: true },
+  { id: 'q17', sectionId: 'sec4', text: '20/27. Jika ya, sebutkan temuan-temuan pokok refleksi sesama guru', type: 'essay', required: false },
+  { id: 'q18', sectionId: 'sec4', text: '21/30. Apakah terdapat kesepakatan kelas yang telah disusun?', type: 'radio', options: ['Ya, disusun guru dengan murid', 'Ya, disiapkan guru', 'Tidak'], required: true },
 
-  // Section 5
-  { id: 'q18', sectionId: 'sec5', text: 'Apa saja dukungan kepala sekolah yang telah dilakukan dalam mewujudkan BSAN?', type: 'essay', required: true },
-  { id: 'q19', sectionId: 'sec5', text: 'Apa saja program sekolah yang sudah disusun dalam mendukung BSAN?', type: 'essay', required: true },
-  { id: 'q20', sectionId: 'sec5', text: 'Ceritakan hal baik / perubahan baik selama implementasi modul BSAN', type: 'essay', required: true }
+  // Section 5 — Dukungan Kepsek, Rencana Aksi & Refleksi
+  { id: 'q19', sectionId: 'sec5', text: '31. Apa saja dukungan kepala sekolah yang telah dilakukan dalam mewujudkan BSAN?', type: 'radio', options: ['Memimpin refleksi guru', 'Melakukan sosialisasi', 'Membangun kolaborasi antar pihak', 'Memasukkan program BSAN ke kurikulum', 'Belum ada'], required: true },
+  { id: 'q20', sectionId: 'sec5', text: '32. Apa saja program sekolah yang sudah disusun dalam mendukung BSAN?', type: 'radio', options: ['Membuat kotak aduan', 'Menyusun SOP pencegahan kekerasan', 'Membentuk tim TPKK', 'Program pembiasaan karakter', 'Belum ada'], required: true },
+  { id: 'q21', sectionId: 'sec5', text: '33. Ceritakan hal baik / perubahan baik selama implementasi modul BSAN', type: 'essay', required: true },
+  { id: 'q22', sectionId: 'sec5', text: '34. Apa tantangan dan kendala utama dalam mewujudkan sekolah aman dan nyaman?', type: 'essay', required: true },
+  { id: 'q23', sectionId: 'sec5', text: '37. No WhatsApp Responden Aktif', type: 'text', required: true }
 ];
 
 const SECTIONS = [
   { id: 'sec1', title: 'Identitas Responden', desc: 'Informasi data dasar sekolah & pengisi' },
-  { id: 'sec2', title: 'Pelatihan & Implementasi', desc: 'Sosialisasi & tingkat penerapan modul BSAN' },
-  { id: 'sec3', title: 'Pembelajaran & Media', desc: 'Evaluasi bagian mudah/sulit & media ajar' },
+  { id: 'sec2', title: 'Pelatihan & Implementasi', desc: 'Identifikasi pelatihan & tingkat adopsi BSAN' },
+  { id: 'sec3', title: 'Implementasi Modul & Media', desc: 'Evaluasi bagian mudah/sulit & media ajar' },
   { id: 'sec4', title: 'Refleksi & Kesepakatan', desc: 'Refleksi bersama murid & teman sejawat' },
   { id: 'sec5', title: 'Dukungan & Perubahan Baik', desc: 'Dukungan kepala sekolah & cerita narasi' }
 ];

@@ -12,6 +12,7 @@ import Kuisioner from './pages/Kuisioner';
 import DataResponden from './pages/DataResponden';
 import DataSatuanPendidikan from './pages/DataSatuanPendidikan';
 import ModulBsan from './pages/ModulBsan';
+import ProporsiModul from './pages/ProporsiModul';
 import GapFunnel from './pages/GapFunnel';
 import MatriksKuadran from './pages/MatriksKuadran';
 import TantanganImplementasi from './pages/TantanganImplementasi';
@@ -71,6 +72,7 @@ function AppContent({
                   <Route path="/responden" element={<DataResponden activeKecamatan={activeKecamatan} setActiveKecamatan={setActiveKecamatan} searchTerm={searchTerm} onSearchChange={setSearchTerm} />} />
                   <Route path="/sekolah" element={<DataSatuanPendidikan userRole={userRole} />} />
                   <Route path="/modul" element={<ModulBsan />} />
+                  <Route path="/proporsi" element={<ProporsiModul />} />
                   <Route path="/funnel" element={<GapFunnel activeKecamatan={activeKecamatan} />} />
                   <Route path="/matriks" element={<MatriksKuadran activeKecamatan={activeKecamatan} />} />
                   <Route path="/tantangan" element={<TantanganImplementasi activeKecamatan={activeKecamatan} />} />

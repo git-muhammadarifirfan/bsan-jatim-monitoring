@@ -2,7 +2,7 @@ import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard, Map, BookOpen, Users, School, BarChart3,
   Layers, Grid3X3, AlertTriangle, MessageSquare, FileSpreadsheet,
-  Settings, LogOut, X
+  Settings, LogOut, X, PieChart
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -33,6 +33,7 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
       title: 'ANALISIS',
       items: [
         { name: 'Modul BSAN', path: '/modul', icon: BarChart3 },
+        { name: 'Proporsi Modul', path: '/proporsi', icon: PieChart },
         { name: 'Analisis Gap Funnel', path: '/funnel', icon: Layers },
         { name: 'Matriks 4 Kuadran', path: '/matriks', icon: Grid3X3 },
         { name: 'Tantangan Implementasi', path: '/tantangan', icon: AlertTriangle },
