@@ -389,7 +389,7 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
       {/* Row 2: Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Bar Chart */}
-        <div className="lg:col-span-2 rounded-2xl bg-surface p-6 shadow-card border border-border">
+        <div className="lg:col-span-2 rounded-2xl bg-surface p-6 shadow-card border border-border flex flex-col justify-between h-full">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 gap-2">
             <div>
               <h3 className="text-base font-bold text-text-primary font-display">
@@ -404,7 +404,7 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
             )}
           </div>
 
-          <div className="h-72">
+          <div className="flex-1 min-h-[420px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 key={`barchart-${selectedKab || 'all'}-${activeKecamatan || 'none'}`}
