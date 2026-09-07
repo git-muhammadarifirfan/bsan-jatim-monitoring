@@ -435,7 +435,7 @@ function ObservasiFormWizard({ onSubmitDone }: { onSubmitDone: () => void }) {
             <List className="h-4 w-4 text-primary" /> Review & Kirim Observasi
           </h3>
           <div className="bg-bg rounded-xl p-4 border border-border/50 space-y-2 text-xs">
-            {[['Sekolah', sekolahNama || '—'], ['Kecamatan', kecamatan ? `Kec. ${kecamatan}` : '—'], ['Tanggal', tanggal], ['Observer', observerNama || '—']].map(([k, v]) => (
+            {[['Sekolah', sekolahNama || 'Belum diisi'], ['Kecamatan', kecamatan ? `Kec. ${kecamatan}` : 'Belum diisi'], ['Tanggal', tanggal], ['Observer', observerNama || 'Belum diisi']].map(([k, v]) => (
               <div key={k} className="flex justify-between border-b border-border/40 pb-1.5 last:border-0">
                 <span className="text-text-secondary font-medium">{k}</span>
                 <span className="text-text-primary font-semibold">{v}</span>

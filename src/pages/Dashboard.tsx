@@ -401,7 +401,7 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
               <Brain className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-text-primary">Observasi SEL — Ringkasan Lapangan</h4>
+              <h4 className="text-xs font-bold text-text-primary">Observasi SEL • Ringkasan Lapangan</h4>
               <p className="text-[10px] text-text-secondary mt-0.5">Data dari {selStats.totalDiobservasi} sekolah yang sudah diobservasi enumerator</p>
             </div>
           </div>
@@ -425,8 +425,9 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
             })}
           </div>
           <Link to="/analisis-sel"
-            className="flex-shrink-0 text-[11px] font-bold text-primary hover:text-primary-dark flex items-center gap-1 whitespace-nowrap transition-colors">
-            Lihat Analisis SEL →
+            className="flex-shrink-0 text-[11px] font-bold text-primary hover:text-primary-dark flex items-center gap-1.5 whitespace-nowrap transition-colors bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-xl">
+            <span>Lihat Analisis SEL</span>
+            <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       )}
