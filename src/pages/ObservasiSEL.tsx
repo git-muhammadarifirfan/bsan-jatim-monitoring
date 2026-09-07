@@ -146,7 +146,7 @@ const STEPS: { id: StepId; label: string; icon: typeof Brain }[] = [
   { id: 'review',              label: 'Review',     icon: CheckCircle2 },
 ];
 
-function ObservasiFormWizard({ onSubmitDone }: { onSubmitDone: () => void }) {
+export function ObservasiFormWizard({ onSubmitDone }: { onSubmitDone?: () => void }) {
   const queryClient = useQueryClient();
   const [stepIdx, setStepIdx] = useState(0);
   const [kabupaten, setKabupaten]     = useState('Kab. Sidoarjo');
@@ -178,7 +178,7 @@ function ObservasiFormWizard({ onSubmitDone }: { onSubmitDone: () => void }) {
       queryClient.invalidateQueries({ queryKey: ['selMatriks'] });
       queryClient.invalidateQueries({ queryKey: ['selStats'] });
       queryClient.invalidateQueries({ queryKey: ['selObservations'] });
-      onSubmitDone();
+      onSubmitDone?.();
     },
   });
 
@@ -599,14 +599,7 @@ function SessionDetailModal({ session, onClose, onDelete }: {
             </div>
           )}
 
-          {/* Action buttons */}
-          <div className="border-t border-border pt-4 flex items-center justify-end">
-            <button
-              onClick={() => { onDelete(session.id); onClose(); }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-status-belum/10 border border-status-belum/20 text-status-belum text-xs font-bold hover:bg-status-belum/20 transition-smooth">
-              <Trash2 className="h-3.5 w-3.5" /> Hapus Sesi
-            </button>
-          </div>
+          {/* Action buttons - Read only */}
         </div>
       </div>
     </div>
@@ -667,7 +660,7 @@ function AdminObservasiPanel() {
             </div>
             <div>
               <h2 className="text-xl font-bold font-display">Manajemen Sesi Observasi SEL</h2>
-              <p className="text-white/70 text-[11px] mt-0.5">Admin · Kelola & edit semua data hasil observasi lapangan</p>
+              <p className="text-white/70 text-[11px] mt-0.5">Admin · Lihat & pantau semua data hasil observasi lapangan</p>
             </div>
           </div>
           {selStats && (
@@ -741,7 +734,7 @@ function AdminObservasiPanel() {
           <h3 className="text-sm font-bold text-text-primary font-display flex items-center gap-2">
             <List className="h-4 w-4 text-primary" /> Daftar Semua Sesi Observasi
           </h3>
-          <span className="text-[10px] text-text-secondary font-medium">Klik icon edit atau detail untuk mengelola</span>
+          <span className="text-[10px] text-text-secondary font-medium">Klik icon detail atau baris tabel untuk melihat detail sesi</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[700px]">
@@ -799,22 +792,10 @@ function AdminObservasiPanel() {
                       <td className="py-3 px-3 text-center">
                         <div className="flex items-center justify-center gap-1" onClick={e => e.stopPropagation()}>
                           <button
-                            onClick={() => setEditingSession(session)}
-                            className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-smooth"
-                            title="Edit Sesi">
-                            <Edit3 className="h-3.5 w-3.5" />
-                          </button>
-                          <button
                             onClick={() => setSelectedSession(session)}
-                            className="p-1.5 rounded-lg text-text-secondary hover:bg-border/40 transition-smooth"
+                            className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-smooth"
                             title="Lihat Detail">
                             <Eye className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(session.id)}
-                            className="p-1.5 rounded-lg text-status-belum hover:bg-status-belum/10 transition-smooth"
-                            title="Hapus Sesi">
-                            <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </td>
