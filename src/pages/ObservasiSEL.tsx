@@ -11,16 +11,16 @@ import {
   ClipboardList, ChevronLeft, ChevronRight, Save, Send, CheckCircle2,
   Eye, EyeOff, MapPin, Users, BookOpen, Brain, AlertCircle, X,
   School, List, Trash2, Edit3, Plus, Search, Calendar, GraduationCap,
-  Star, RefreshCw, Filter,
+  Star, RefreshCw, Filter, XCircle, Clock, CheckCircle, Sparkles, Building2, Trees
 } from 'lucide-react';
 
 // ─── Helpers ────────────────────────────────────────────────────
 
-const SKOR_OPTIONS: { value: SELSkor; label: string; emoji: string; color: string; selColor: string }[] = [
-  { value: 1, label: 'Tidak Terlihat',   emoji: '❌', color: 'text-status-belum',    selColor: 'border-status-belum   bg-status-belum/5' },
-  { value: 2, label: 'Kadang Terlihat',  emoji: '🌗', color: 'text-status-sebagian', selColor: 'border-status-sebagian bg-status-sebagian/5' },
-  { value: 3, label: 'Sering Terlihat',  emoji: '✅', color: 'text-status-sudah',    selColor: 'border-status-sudah   bg-status-sudah/5' },
-  { value: 4, label: 'Konsisten',        emoji: '🌟', color: 'text-primary',         selColor: 'border-primary        bg-primary/5' },
+const SKOR_OPTIONS: { value: SELSkor; label: string; icon: typeof XCircle; color: string; selColor: string }[] = [
+  { value: 1, label: 'Tidak Terlihat',   icon: XCircle,     color: 'text-status-belum',    selColor: 'border-status-belum   bg-status-belum/5' },
+  { value: 2, label: 'Kadang Terlihat',  icon: Clock,       color: 'text-status-sebagian', selColor: 'border-status-sebagian bg-status-sebagian/5' },
+  { value: 3, label: 'Sering Terlihat',  icon: CheckCircle, color: 'text-status-sudah',    selColor: 'border-status-sudah   bg-status-sudah/5' },
+  { value: 4, label: 'Konsisten',        icon: Sparkles,    color: 'text-primary',         selColor: 'border-primary        bg-primary/5' },
 ];
 
 const LOKASI_OPTIONS = ['Ruang kelas', 'Halaman sekolah', 'Lorong kelas', 'Kantin sekolah', 'Perpustakaan sekolah', 'Mushola'];
@@ -55,47 +55,57 @@ function IndikatorCard({
 }) {
   const [showCatatan, setShowCatatan] = useState(false);
   const skor = jawaban?.skor ?? null;
+  const currentOpt = SKOR_OPTIONS.find(s => s.value === skor);
+  const CurrentIcon = currentOpt?.icon;
 
   return (
     <div className={`rounded-xl border-2 transition-all duration-200 p-4 space-y-3 ${skor ? 'border-primary/25 bg-primary/3' : 'border-border bg-bg/30'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-            <span className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${indikator.subjek === 'guru' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
-              {indikator.subjek === 'guru' ? '👩‍🏫 Guru' : '👦 Murid'}
+            <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${indikator.subjek === 'guru' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
+              {indikator.subjek === 'guru' ? <GraduationCap className="h-3 w-3" /> : <Users className="h-3 w-3" />}
+              {indikator.subjek === 'guru' ? 'Guru' : 'Murid'}
             </span>
-            <span className="text-[9px] text-text-secondary font-medium">
-              {indikator.konteks === 'kelas' ? '🏫 Kelas' : '🌳 Lingkungan'}
+            <span className="inline-flex items-center gap-1 text-[9px] text-text-secondary font-medium px-1.5 py-0.5 rounded bg-bg border border-border/50">
+              {indikator.konteks === 'kelas' ? <Building2 className="h-3 w-3" /> : <Trees className="h-3 w-3" />}
+              {indikator.konteks === 'kelas' ? 'Kelas' : 'Lingkungan'}
             </span>
           </div>
           <p className="text-xs font-semibold text-text-primary leading-relaxed">{indikator.teks}</p>
           {indikator.catatan && (
-            <p className="text-[10px] text-text-secondary italic mt-1 leading-relaxed">📌 {indikator.catatan}</p>
+            <p className="text-[10px] text-text-secondary italic mt-1 leading-relaxed flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 text-text-secondary/70 shrink-0" /> {indikator.catatan}
+            </p>
           )}
         </div>
-        {skor && (
-          <span className={`flex-shrink-0 text-[10px] font-bold px-2 py-1 rounded-lg ${SKOR_OPTIONS.find(s => s.value === skor)?.color}`}>
-            {SKOR_OPTIONS.find(s => s.value === skor)?.emoji} {skor}/4
+        {skor && currentOpt && CurrentIcon && (
+          <span className={`flex-shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg ${currentOpt.color} bg-surface border border-border/60 shadow-xs`}>
+            <CurrentIcon className="h-3.5 w-3.5" /> {skor}/4
           </span>
         )}
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {SKOR_OPTIONS.map(opt => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onSkorChange(indikator.id, skor === opt.value ? null : opt.value)}
-            className={`flex flex-col items-center gap-0.5 px-2 py-2.5 rounded-xl border-2 text-[10px] font-semibold transition-all duration-200 cursor-pointer ${
-              skor === opt.value
-                ? `${opt.selColor} ${opt.color} shadow-sm scale-[1.02]`
-                : 'border-border/60 text-text-secondary hover:text-text-primary hover:border-border'
-            }`}
-          >
-            <span className="text-base leading-none">{opt.emoji}</span>
-            <span className="leading-tight text-center">{opt.label}</span>
-          </button>
-        ))}
+        {SKOR_OPTIONS.map(opt => {
+          const Icon = opt.icon;
+          const isSelected = skor === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onSkorChange(indikator.id, isSelected ? null : opt.value)}
+              className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl border-2 text-[10px] font-semibold transition-all duration-200 cursor-pointer ${
+                isSelected
+                  ? `${opt.selColor} ${opt.color} shadow-sm scale-[1.02]`
+                  : 'border-border/60 text-text-secondary hover:text-text-primary hover:border-border bg-bg/50'
+              }`}
+            >
+              <Icon className={`h-4 w-4 ${isSelected ? opt.color : 'text-text-secondary/70'}`} />
+              <span className="leading-tight text-center">{opt.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex items-center justify-between">
@@ -397,7 +407,8 @@ function ObservasiFormWizard({ onSubmitDone }: { onSubmitDone: () => void }) {
                 <div key={subjek}>
                   <div className="flex items-center gap-2 mb-3 px-1">
                     <span className={`text-xs font-bold flex items-center gap-1.5 ${subjek === 'guru' ? 'text-primary' : 'text-accent'}`}>
-                      {subjek === 'guru' ? '👩‍🏫 Indikator Guru' : '👦 Indikator Murid'}
+                      {subjek === 'guru' ? <GraduationCap className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+                      {subjek === 'guru' ? 'Indikator Guru' : 'Indikator Murid'}
                     </span>
                     <div className={`flex-1 h-px ${subjek === 'guru' ? 'bg-primary/20' : 'bg-accent/20'}`} />
                   </div>
@@ -495,10 +506,11 @@ function ObservasiFormWizard({ onSubmitDone }: { onSubmitDone: () => void }) {
 //  BAGIAN 3: ADMIN CRUD PANEL
 // ══════════════════════════════════════════════════════════════
 
-function SessionDetailModal({ session, onClose, onDelete }: {
+function SessionDetailModal({ session, onClose, onDelete, onEdit }: {
   session: SELObservasiSession;
   onClose: () => void;
   onDelete: (id: string) => void;
+  onEdit: (session: SELObservasiSession) => void;
 }) {
   // Compute scores per dimensi for display
   const jawabanMap: Record<string, SELSkor | null> = {};
@@ -588,15 +600,118 @@ function SessionDetailModal({ session, onClose, onDelete }: {
             </div>
           )}
 
-          {/* Delete button */}
-          <div className="border-t border-border pt-4 flex justify-end">
+          {/* Action buttons */}
+          <div className="border-t border-border pt-4 flex items-center justify-between">
             <button
               onClick={() => { onDelete(session.id); onClose(); }}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-status-belum/10 border border-status-belum/20 text-status-belum text-xs font-bold hover:bg-status-belum/20 transition-smooth">
-              <Trash2 className="h-3.5 w-3.5" /> Hapus Sesi Ini
+              <Trash2 className="h-3.5 w-3.5" /> Hapus Sesi
+            </button>
+            <button
+              onClick={() => { onEdit(session); onClose(); }}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:bg-primary-dark transition-smooth">
+              <Edit3 className="h-3.5 w-3.5" /> Edit Data Sesi
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function EditSessionModal({ session, onClose, onSave }: {
+  session: SELObservasiSession;
+  onClose: () => void;
+  onSave: (updated: SELObservasiSession) => void;
+}) {
+  const [sekolahNama, setSekolahNama] = useState(session.sekolahNama);
+  const [observerNama, setObserverNama] = useState(session.observerNama || '');
+  const [tanggal, setTanggal] = useState(session.tanggal);
+  const [kelasDiamati, setKelasDiamati] = useState(session.kelasDiamati || '');
+  const [namaGuruInisial, setNamaGuruInisial] = useState(session.namaGuruInisial || '');
+  const [mataPelajaran, setMataPelajaran] = useState(session.mataPelajaran || '');
+  const [status, setStatus] = useState(session.status);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({
+      ...session,
+      sekolahNama,
+      observerNama,
+      tanggal,
+      kelasDiamati,
+      namaGuruInisial,
+      mataPelajaran,
+      status,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-lg overflow-hidden">
+        <div className="flex items-center justify-between p-5 border-b border-border bg-surface">
+          <div className="flex items-center gap-2">
+            <Edit3 className="h-4 w-4 text-primary" />
+            <h3 className="font-bold text-text-primary text-base font-display">Edit Sesi Observasi</h3>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-text-secondary hover:bg-border/40 transition-smooth">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
+          <div className="space-y-1">
+            <label className="font-bold text-text-secondary uppercase text-[10px]">Nama Sekolah</label>
+            <input type="text" value={sekolahNama} onChange={e => setSekolahNama(e.target.value)} required
+              className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="font-bold text-text-secondary uppercase text-[10px]">Observer</label>
+              <input type="text" value={observerNama} onChange={e => setObserverNama(e.target.value)}
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
+            </div>
+            <div className="space-y-1">
+              <label className="font-bold text-text-secondary uppercase text-[10px]">Tanggal</label>
+              <input type="date" value={tanggal} onChange={e => setTanggal(e.target.value)}
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="font-bold text-text-secondary uppercase text-[10px]">Kelas</label>
+              <input type="text" value={kelasDiamati} onChange={e => setKelasDiamati(e.target.value)}
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
+            </div>
+            <div className="space-y-1">
+              <label className="font-bold text-text-secondary uppercase text-[10px]">Guru Inisial</label>
+              <input type="text" value={namaGuruInisial} onChange={e => setNamaGuruInisial(e.target.value)}
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
+            </div>
+            <div className="space-y-1">
+              <label className="font-bold text-text-secondary uppercase text-[10px]">Mata Pelajaran</label>
+              <input type="text" value={mataPelajaran} onChange={e => setMataPelajaran(e.target.value)}
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="font-bold text-text-secondary uppercase text-[10px]">Status Observasi</label>
+            <select value={status} onChange={e => setStatus(e.target.value as 'draft' | 'submitted')}
+              className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none font-semibold">
+              <option value="submitted">Submitted (Selesai)</option>
+              <option value="draft">Draft (Belum Selesai)</option>
+            </select>
+          </div>
+          <div className="border-t border-border pt-4 flex justify-end gap-2">
+            <button type="button" onClick={onClose}
+              className="px-4 py-2 rounded-xl border border-border text-text-secondary font-semibold hover:bg-bg transition-smooth">
+              Batal
+            </button>
+            <button type="submit"
+              className="px-5 py-2 rounded-xl bg-primary text-white font-bold shadow-sm hover:bg-primary-dark transition-smooth flex items-center gap-1.5">
+              <Save className="h-3.5 w-3.5" /> Simpan Perubahan
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -607,9 +722,11 @@ function AdminObservasiPanel() {
   const [selectedKab, setSelectedKab] = useState('');
   const [search, setSearch] = useState('');
   const [selectedSession, setSelectedSession] = useState<SELObservasiSession | null>(null);
+  const [editingSession, setEditingSession] = useState<SELObservasiSession | null>(null);
+  const [customSessions, setCustomSessions] = useState<Record<string, SELObservasiSession>>({});
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
-  const { data: sessions = [], isLoading, refetch } = useQuery({
+  const { data: rawSessions = [], isLoading, refetch } = useQuery({
     queryKey: ['selObservations', selectedKab],
     queryFn: () => database.getSELObservations({ kabupaten: selectedKab || undefined }),
   });
@@ -618,6 +735,8 @@ function AdminObservasiPanel() {
     queryKey: ['selStats'],
     queryFn: database.getSELSummaryStats,
   });
+
+  const sessions = rawSessions.map(s => customSessions[s.id] || s);
 
   const visibleSessions = sessions
     .filter(s => !deletedIds.has(s.id))
@@ -633,6 +752,11 @@ function AdminObservasiPanel() {
     queryClient.invalidateQueries({ queryKey: ['selStats'] });
   };
 
+  const handleSaveEdit = (updated: SELObservasiSession) => {
+    setCustomSessions(prev => ({ ...prev, [updated.id]: updated }));
+    setEditingSession(null);
+  };
+
   return (
     <div className="space-y-5">
       {selectedSession && (
@@ -640,6 +764,15 @@ function AdminObservasiPanel() {
           session={selectedSession}
           onClose={() => setSelectedSession(null)}
           onDelete={handleDelete}
+          onEdit={s => setEditingSession(s)}
+        />
+      )}
+
+      {editingSession && (
+        <EditSessionModal
+          session={editingSession}
+          onClose={() => setEditingSession(null)}
+          onSave={handleSaveEdit}
         />
       )}
 
@@ -653,7 +786,7 @@ function AdminObservasiPanel() {
             </div>
             <div>
               <h2 className="text-xl font-bold font-display">Manajemen Sesi Observasi SEL</h2>
-              <p className="text-white/70 text-[11px] mt-0.5">Admin · Kelola semua data hasil observasi lapangan</p>
+              <p className="text-white/70 text-[11px] mt-0.5">Admin · Kelola & edit semua data hasil observasi lapangan</p>
             </div>
           </div>
           {selStats && (
@@ -727,7 +860,7 @@ function AdminObservasiPanel() {
           <h3 className="text-sm font-bold text-text-primary font-display flex items-center gap-2">
             <List className="h-4 w-4 text-primary" /> Daftar Semua Sesi Observasi
           </h3>
-          <span className="text-[10px] text-text-secondary font-medium">Klik baris untuk detail & hapus</span>
+          <span className="text-[10px] text-text-secondary font-medium">Klik icon edit atau detail untuk mengelola</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[700px]">
@@ -785,8 +918,14 @@ function AdminObservasiPanel() {
                       <td className="py-3 px-3 text-center">
                         <div className="flex items-center justify-center gap-1" onClick={e => e.stopPropagation()}>
                           <button
-                            onClick={() => setSelectedSession(session)}
+                            onClick={() => setEditingSession(session)}
                             className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-smooth"
+                            title="Edit Sesi">
+                            <Edit3 className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setSelectedSession(session)}
+                            className="p-1.5 rounded-lg text-text-secondary hover:bg-border/40 transition-smooth"
                             title="Lihat Detail">
                             <Eye className="h-3.5 w-3.5" />
                           </button>
