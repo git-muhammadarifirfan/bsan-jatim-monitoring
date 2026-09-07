@@ -5,7 +5,8 @@ import { database, KABUPATEN_LIST } from '../lib/data-source';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
   TrendingUp, Download, Building2, Award, Users, Filter, Send, Check, ChevronLeft,
-  CheckCircle2, AlertCircle, BookOpen, Clock, Activity, Target, X, ChevronRight, Share2, Printer
+  CheckCircle2, AlertCircle, BookOpen, Clock, Activity, Target, X, ChevronRight, Share2, Printer,
+  Brain, GraduationCap, AlertTriangle
 } from 'lucide-react';
 
 import AnimatedCounter from '../components/AnimatedCounter';
@@ -114,6 +115,12 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
   const followUp = schools.filter((s) => s.status === 'belum');
   const totalPages = Math.max(1, Math.ceil(followUp.length / perPage));
   const pagedFollowUp = followUp.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  const { data: selStats } = useQuery({
+    queryKey: ['selStats'],
+    queryFn: database.getSELSummaryStats,
+    enabled: userRole === 'admin',
+  });
 
   const reminderMutation = useMutation({
     mutationFn: (id: string) => database.sendReminder(id),
@@ -386,7 +393,46 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
         })}
       </div>
 
+      {/* SEL Insight Banner */}
+      {selStats && (
+        <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-xl">
+              <Brain className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-text-primary">Observasi SEL — Ringkasan Lapangan</h4>
+              <p className="text-[10px] text-text-secondary mt-0.5">Data dari {selStats.totalDiobservasi} sekolah yang sudah diobservasi enumerator</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3 text-center">
+            {[
+              { label: 'Diobservasi', value: `${selStats.totalDiobservasi} SD`, icon: Users, color: 'text-primary' },
+              { label: 'Rata Guru', value: `${selStats.rataGuruAll}/4`, icon: GraduationCap, color: 'text-status-sudah' },
+              { label: 'Rata Murid', value: `${selStats.rataMuridAll}/4`, icon: Users, color: 'text-accent' },
+              { label: 'Perlu Intervensi', value: `${selStats.butuhIntervensi} SD`, icon: AlertTriangle, color: 'text-status-belum' },
+            ].map(item => {
+              const Icon = item.icon;
+              return (
+                <div key={item.label} className="flex items-center gap-1.5 bg-surface rounded-xl px-3 py-2 border border-border/60">
+                  <Icon className={`h-3.5 w-3.5 ${item.color}`} />
+                  <div className="text-left">
+                    <div className={`text-[11px] font-black ${item.color}`}>{item.value}</div>
+                    <div className="text-[9px] text-text-secondary">{item.label}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <Link to="/analisis-sel"
+            className="flex-shrink-0 text-[11px] font-bold text-primary hover:text-primary-dark flex items-center gap-1 whitespace-nowrap transition-colors">
+            Lihat Analisis SEL →
+          </Link>
+        </div>
+      )}
+
       {/* Row 2: Charts */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Bar Chart */}
         <div className="lg:col-span-2 rounded-2xl bg-surface p-6 shadow-card border border-border flex flex-col justify-between h-full">
