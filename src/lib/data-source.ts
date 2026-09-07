@@ -1,5 +1,7 @@
 import realSchoolsData from './real-schools.json';
 import realSurveyData from './real-survey-data.json';
+import type { SELDimensi, SELSubjek, SELSkor } from './sel-indicators';
+import { SEL_INDIKATORS, hitungSkorRata, SEL_DIMENSI_ORDER, SEL_DIMENSI_LABEL } from './sel-indicators';
 
 export interface School {
   id: string;
@@ -99,6 +101,159 @@ export interface RadarPoint {
   kecamatan: number;
   fullMark: number;
 }
+
+// ─── SEL Observation Types ───────────────────────────────────
+
+export interface SELJawaban {
+  indikatorId: string;
+  skor: SELSkor | null;   // null = tidak bisa diamati
+  catatan: string;
+}
+
+export interface SELObservasiSession {
+  id: string;
+  sekolahId: string;
+  sekolahNama: string;
+  kecamatan: string;
+  kabupaten: string;
+  observerNama: string;
+  tanggal: string;
+  lokasiDiamati: string[];
+  waktuPengamatan: string[];
+  jumlahSiswaL: number;
+  jumlahSiswaP: number;
+  siswaDisabilitasL: number;
+  siswaDisabilitasP: number;
+  jangkauanSiswa: 1 | 2 | 3 | 4;
+  kelasDiamati: string;
+  namaGuruInisial: string;
+  jenisKelaminGuru: 'L' | 'P';
+  mataPelajaran: string;
+  jawaban: SELJawaban[];
+  status: 'draft' | 'submitted';
+}
+
+export interface SELDimensiScore {
+  dimensi: SELDimensi;
+  label: string;
+  guruSkor: number;
+  muridSkor: number;
+  rataRata: number;
+}
+
+export interface SELSchoolScore {
+  sekolahId: string;
+  sekolahNama: string;
+  kecamatan: string;
+  kabupaten: string;
+  tanggal: string;
+  guruTotal: number;
+  muridTotal: number;
+  totalRata: number;
+  dimensi: SELDimensiScore[];
+  kuisionerScore: number; // skor dari kuesioner BSAN (0-100)
+}
+
+export interface SELHeatmapRow {
+  kecamatan: string;
+  kabupaten: string;
+  jumlahSekolah: number;
+  dimensiScores: Record<SELDimensi, number>;
+  rataRata: number;
+}
+
+export interface SELMatriksPoint {
+  id: string;
+  name: string;
+  kecamatan: string;
+  kuisionerScore: number; // sumbu X: skor kuesioner BSAN 0-100
+  selScore: number;       // sumbu Y: skor observasi SEL 1-4
+  guruSkor: number;
+  muridSkor: number;
+  status: 'belum' | 'sebagian' | 'sudah';
+}
+
+// ─── Mock SEL Observasi Data ──────────────────────────────────
+
+function makeMockJawaban(seed: number): SELJawaban[] {
+  return SEL_INDIKATORS.map((ind, idx) => {
+    const raw = ((seed * 7 + idx * 13) % 4) + 1;
+    // Murid slightly lower than guru
+    const adj = ind.subjek === 'murid' ? Math.max(1, raw - 1) : raw;
+    return {
+      indikatorId: ind.id,
+      skor: adj as SELSkor,
+      catatan: '',
+    };
+  });
+}
+
+const SEL_MOCK_SESSIONS: SELObservasiSession[] = [
+  // Sidoarjo
+  { id:'sel_1', sekolahId:'s001', sekolahNama:'SDN Candi 1',      kecamatan:'Kec. Candi',    kabupaten:'Kab. Sidoarjo', observerNama:'Budi S.',  tanggal:'2026-08-20', lokasiDiamati:['Ruang kelas','Halaman'], waktuPengamatan:['Istirahat'], jumlahSiswaL:120, jumlahSiswaP:118, siswaDisabilitasL:1, siswaDisabilitasP:0, jangkauanSiswa:2, kelasDiamati:'4A', namaGuruInisial:'RW', jenisKelaminGuru:'P', mataPelajaran:'Tematik', jawaban: makeMockJawaban(71), status:'submitted' },
+  { id:'sel_2', sekolahId:'s002', sekolahNama:'SDN Waru 2',       kecamatan:'Kec. Waru',     kabupaten:'Kab. Sidoarjo', observerNama:'Siti A.',  tanggal:'2026-08-21', lokasiDiamati:['Ruang kelas','Lorong'], waktuPengamatan:['Sebelum masuk'], jumlahSiswaL:98, jumlahSiswaP:102, siswaDisabilitasL:0, siswaDisabilitasP:1, jangkauanSiswa:3, kelasDiamati:'5B', namaGuruInisial:'DH', jenisKelaminGuru:'L', mataPelajaran:'Matematika', jawaban: makeMockJawaban(42), status:'submitted' },
+  { id:'sel_3', sekolahId:'s003', sekolahNama:'SDN Gedangan 3',   kecamatan:'Kec. Gedangan', kabupaten:'Kab. Sidoarjo', observerNama:'Ahmad M.', tanggal:'2026-08-22', lokasiDiamati:['Ruang kelas','Kantin'], waktuPengamatan:['Istirahat','Pulang'], jumlahSiswaL:88, jumlahSiswaP:91, siswaDisabilitasL:2, siswaDisabilitasP:1, jangkauanSiswa:1, kelasDiamati:'3C', namaGuruInisial:'AS', jenisKelaminGuru:'P', mataPelajaran:'Bahasa Indonesia', jawaban: makeMockJawaban(93), status:'submitted' },
+  { id:'sel_4', sekolahId:'s004', sekolahNama:'SDN Taman 1',      kecamatan:'Kec. Taman',    kabupaten:'Kab. Sidoarjo', observerNama:'Budi S.',  tanggal:'2026-08-23', lokasiDiamati:['Ruang kelas'], waktuPengamatan:['Istirahat'], jumlahSiswaL:140, jumlahSiswaP:135, siswaDisabilitasL:0, siswaDisabilitasP:0, jangkauanSiswa:2, kelasDiamati:'6A', namaGuruInisial:'NK', jenisKelaminGuru:'P', mataPelajaran:'IPA', jawaban: makeMockJawaban(55), status:'submitted' },
+  { id:'sel_5', sekolahId:'s005', sekolahNama:'SDN Sedati 2',     kecamatan:'Kec. Sedati',   kabupaten:'Kab. Sidoarjo', observerNama:'Siti A.',  tanggal:'2026-08-24', lokasiDiamati:['Halaman','Lorong'], waktuPengamatan:['Ekskul'], jumlahSiswaL:76, jumlahSiswaP:79, siswaDisabilitasL:1, siswaDisabilitasP:0, jangkauanSiswa:4, kelasDiamati:'2B', namaGuruInisial:'RH', jenisKelaminGuru:'L', mataPelajaran:'PJOK', jawaban: makeMockJawaban(28), status:'submitted' },
+  { id:'sel_6', sekolahId:'s006', sekolahNama:'SDN Buduran 1',    kecamatan:'Kec. Buduran',  kabupaten:'Kab. Sidoarjo', observerNama:'Ahmad M.', tanggal:'2026-08-25', lokasiDiamati:['Ruang kelas','Perpustakaan'], waktuPengamatan:['Istirahat'], jumlahSiswaL:112, jumlahSiswaP:108, siswaDisabilitasL:0, siswaDisabilitasP:2, jangkauanSiswa:2, kelasDiamati:'5A', namaGuruInisial:'YP', jenisKelaminGuru:'P', mataPelajaran:'IPS', jawaban: makeMockJawaban(67), status:'submitted' },
+  { id:'sel_7', sekolahId:'s007', sekolahNama:'SDN Sukodono 3',   kecamatan:'Kec. Sukodono', kabupaten:'Kab. Sidoarjo', observerNama:'Budi S.',  tanggal:'2026-08-26', lokasiDiamati:['Ruang kelas'], waktuPengamatan:['Sebelum masuk','Istirahat'], jumlahSiswaL:95, jumlahSiswaP:98, siswaDisabilitasL:0, siswaDisabilitasP:0, jangkauanSiswa:3, kelasDiamati:'4C', namaGuruInisial:'MH', jenisKelaminGuru:'L', mataPelajaran:'Tematik', jawaban: makeMockJawaban(81), status:'submitted' },
+  { id:'sel_8', sekolahId:'s008', sekolahNama:'SDN Krian 2',      kecamatan:'Kec. Krian',    kabupaten:'Kab. Sidoarjo', observerNama:'Siti A.',  tanggal:'2026-08-27', lokasiDiamati:['Ruang kelas','Halaman','Kantin'], waktuPengamatan:['Istirahat'], jumlahSiswaL:128, jumlahSiswaP:132, siswaDisabilitasL:1, siswaDisabilitasP:1, jangkauanSiswa:1, kelasDiamati:'1A', namaGuruInisial:'EK', jenisKelaminGuru:'P', mataPelajaran:'Tematik', jawaban: makeMockJawaban(34), status:'submitted' },
+  { id:'sel_9', sekolahId:'s009', sekolahNama:'SDN Porong 1',     kecamatan:'Kec. Porong',   kabupaten:'Kab. Sidoarjo', observerNama:'Ahmad M.', tanggal:'2026-08-28', lokasiDiamati:['Ruang kelas','Mushola'], waktuPengamatan:['Ekskul'], jumlahSiswaL:84, jumlahSiswaP:87, siswaDisabilitasL:0, siswaDisabilitasP:0, jangkauanSiswa:2, kelasDiamati:'6B', namaGuruInisial:'SR', jenisKelaminGuru:'L', mataPelajaran:'PAI', jawaban: makeMockJawaban(59), status:'submitted' },
+  { id:'sel_10',sekolahId:'s010', sekolahNama:'SDN Sidoarjo 4',   kecamatan:'Kec. Sidoarjo', kabupaten:'Kab. Sidoarjo', observerNama:'Budi S.',  tanggal:'2026-08-29', lokasiDiamati:['Ruang kelas'], waktuPengamatan:['Istirahat','Pulang'], jumlahSiswaL:155, jumlahSiswaP:150, siswaDisabilitasL:2, siswaDisabilitasP:1, jangkauanSiswa:2, kelasDiamati:'3A', namaGuruInisial:'LW', jenisKelaminGuru:'P', mataPelajaran:'Tematik', jawaban: makeMockJawaban(47), status:'submitted' },
+  // Kota Batu
+  { id:'sel_11',sekolahId:'s011', sekolahNama:'SDN Batu 1',       kecamatan:'Kec. Batu',     kabupaten:'Kota Batu',     observerNama:'Rina P.',  tanggal:'2026-08-20', lokasiDiamati:['Ruang kelas','Halaman'], waktuPengamatan:['Istirahat'], jumlahSiswaL:90, jumlahSiswaP:88, siswaDisabilitasL:0, siswaDisabilitasP:1, jangkauanSiswa:2, kelasDiamati:'5A', namaGuruInisial:'TH', jenisKelaminGuru:'P', mataPelajaran:'Tematik', jawaban: makeMockJawaban(72), status:'submitted' },
+  { id:'sel_12',sekolahId:'s012', sekolahNama:'SDN Bumiaji 2',    kecamatan:'Kec. Bumiaji',  kabupaten:'Kota Batu',     observerNama:'Rina P.',  tanggal:'2026-08-21', lokasiDiamati:['Ruang kelas'], waktuPengamatan:['Sebelum masuk'], jumlahSiswaL:65, jumlahSiswaP:68, siswaDisabilitasL:1, siswaDisabilitasP:0, jangkauanSiswa:3, kelasDiamati:'4B', namaGuruInisial:'DA', jenisKelaminGuru:'L', mataPelajaran:'Matematika', jawaban: makeMockJawaban(38), status:'submitted' },
+  { id:'sel_13',sekolahId:'s013', sekolahNama:'SDN Junrejo 1',    kecamatan:'Kec. Junrejo',  kabupaten:'Kota Batu',     observerNama:'Rina P.',  tanggal:'2026-08-22', lokasiDiamati:['Ruang kelas','Perpustakaan'], waktuPengamatan:['Istirahat','Ekskul'], jumlahSiswaL:78, jumlahSiswaP:80, siswaDisabilitasL:0, siswaDisabilitasP:2, jangkauanSiswa:1, kelasDiamati:'6C', namaGuruInisial:'NI', jenisKelaminGuru:'P', mataPelajaran:'IPA', jawaban: makeMockJawaban(85), status:'submitted' },
+  // Kab. Tuban
+  { id:'sel_14',sekolahId:'s014', sekolahNama:'SDN Tuban 3',      kecamatan:'Kec. Tuban',    kabupaten:'Kab. Tuban',    observerNama:'Doni K.',  tanggal:'2026-08-20', lokasiDiamati:['Ruang kelas','Kantin'], waktuPengamatan:['Istirahat'], jumlahSiswaL:105, jumlahSiswaP:102, siswaDisabilitasL:1, siswaDisabilitasP:0, jangkauanSiswa:2, kelasDiamati:'5C', namaGuruInisial:'WS', jenisKelaminGuru:'L', mataPelajaran:'IPS', jawaban: makeMockJawaban(61), status:'submitted' },
+  { id:'sel_15',sekolahId:'s015', sekolahNama:'SDN Semanding 1',  kecamatan:'Kec. Semanding', kabupaten:'Kab. Tuban',   observerNama:'Doni K.',  tanggal:'2026-08-21', lokasiDiamati:['Ruang kelas'], waktuPengamatan:['Sebelum masuk','Istirahat'], jumlahSiswaL:82, jumlahSiswaP:85, siswaDisabilitasL:0, siswaDisabilitasP:0, jangkauanSiswa:3, kelasDiamati:'3B', namaGuruInisial:'FH', jenisKelaminGuru:'P', mataPelajaran:'Bahasa Indonesia', jawaban: makeMockJawaban(22), status:'submitted' },
+  { id:'sel_16',sekolahId:'s016', sekolahNama:'SDN Palang 2',     kecamatan:'Kec. Palang',   kabupaten:'Kab. Tuban',    observerNama:'Doni K.',  tanggal:'2026-08-22', lokasiDiamati:['Ruang kelas','Halaman'], waktuPengamatan:['Istirahat'], jumlahSiswaL:70, jumlahSiswaP:73, siswaDisabilitasL:2, siswaDisabilitasP:1, jangkauanSiswa:4, kelasDiamati:'2A', namaGuruInisial:'PK', jenisKelaminGuru:'L', mataPelajaran:'PJOK', jawaban: makeMockJawaban(49), status:'submitted' },
+  { id:'sel_17',sekolahId:'s017', sekolahNama:'SDN Jenu 1',       kecamatan:'Kec. Jenu',     kabupaten:'Kab. Tuban',    observerNama:'Lina M.',  tanggal:'2026-08-23', lokasiDiamati:['Ruang kelas','Lorong'], waktuPengamatan:['Istirahat'], jumlahSiswaL:60, jumlahSiswaP:63, siswaDisabilitasL:0, siswaDisabilitasP:1, jangkauanSiswa:2, kelasDiamati:'4A', namaGuruInisial:'RS', jenisKelaminGuru:'P', mataPelajaran:'Tematik', jawaban: makeMockJawaban(76), status:'submitted' },
+  { id:'sel_18',sekolahId:'s018', sekolahNama:'SDN Merakurak 2',  kecamatan:'Kec. Merakurak', kabupaten:'Kab. Tuban',   observerNama:'Lina M.',  tanggal:'2026-08-24', lokasiDiamati:['Ruang kelas'], waktuPengamatan:['Sebelum masuk'], jumlahSiswaL:55, jumlahSiswaP:58, siswaDisabilitasL:1, siswaDisabilitasP:0, jangkauanSiswa:3, kelasDiamati:'5B', namaGuruInisial:'AL', jenisKelaminGuru:'L', mataPelajaran:'Matematika', jawaban: makeMockJawaban(31), status:'submitted' },
+];
+
+function computeSELScore(session: SELObservasiSession): SELSchoolScore {
+  const jawabanMap: Record<string, SELSkor | null> = {};
+  session.jawaban.forEach(j => { jawabanMap[j.indikatorId] = j.skor; });
+
+  const dimensiScores: SELDimensiScore[] = SEL_DIMENSI_ORDER.map(d => ({
+    dimensi: d,
+    label: SEL_DIMENSI_LABEL[d],
+    guruSkor: hitungSkorRata(jawabanMap, 'guru', d),
+    muridSkor: hitungSkorRata(jawabanMap, 'murid', d),
+    rataRata: hitungSkorRata(jawabanMap, undefined, d),
+  }));
+
+  const guruTotal  = hitungSkorRata(jawabanMap, 'guru');
+  const muridTotal = hitungSkorRata(jawabanMap, 'murid');
+  const totalRata  = Math.round(((guruTotal + muridTotal) / 2) * 10) / 10;
+
+  // Derive kuesioner score from school status in schools data
+  const school = schoolsData.find(s => s.nama === session.sekolahNama ||
+    s.kecamatan === session.kecamatan);
+  const kuisionerScore = school
+    ? school.status === 'sudah' ? 75 + (parseInt(school.npsn || '0') % 20)
+      : school.status === 'sebagian' ? 40 + (parseInt(school.npsn || '0') % 30)
+      : 15 + (parseInt(school.npsn || '0') % 20)
+    : 50;
+
+  return {
+    sekolahId: session.sekolahId,
+    sekolahNama: session.sekolahNama,
+    kecamatan: session.kecamatan,
+    kabupaten: session.kabupaten,
+    tanggal: session.tanggal,
+    guruTotal,
+    muridTotal,
+    totalRata,
+    dimensi: dimensiScores,
+    kuisionerScore,
+  };
+}
+
+export const selObservasiData: SELObservasiSession[] = SEL_MOCK_SESSIONS;
+
+// ─── End SEL Data ─────────────────────────────────────────────
 
 export interface ProporsiModulData {
   proporsiPenerima: { ya: number; tidak: number; totalResponden: number };
@@ -686,6 +841,128 @@ export const database = {
       };
 
       setTimeout(() => resolve(data), 100);
+    });
+  },
+
+  // ─── SEL API Functions ───────────────────────────────────────
+
+  getSELObservations: async (filters?: {
+    kabupaten?: string;
+    kecamatan?: string;
+  }): Promise<SELObservasiSession[]> => {
+    return new Promise(resolve => {
+      let result = [...selObservasiData];
+      if (filters?.kabupaten) result = result.filter(s => s.kabupaten === filters.kabupaten);
+      if (filters?.kecamatan) result = result.filter(s => s.kecamatan === filters.kecamatan);
+      setTimeout(() => resolve(result), 100);
+    });
+  },
+
+  getSELScores: async (filters?: {
+    kabupaten?: string;
+    kecamatan?: string;
+  }): Promise<SELSchoolScore[]> => {
+    return new Promise(resolve => {
+      let sessions = [...selObservasiData];
+      if (filters?.kabupaten) sessions = sessions.filter(s => s.kabupaten === filters.kabupaten);
+      if (filters?.kecamatan) sessions = sessions.filter(s => s.kecamatan === filters.kecamatan);
+      const scores = sessions.map(s => computeSELScore(s));
+      setTimeout(() => resolve(scores), 100);
+    });
+  },
+
+  getSELHeatmap: async (kabupaten?: string): Promise<SELHeatmapRow[]> => {
+    return new Promise(resolve => {
+      const sessions = kabupaten
+        ? selObservasiData.filter(s => s.kabupaten === kabupaten)
+        : selObservasiData;
+
+      const kecMap: Record<string, { scores: SELSchoolScore[]; kabupaten: string }> = {};
+      sessions.forEach(session => {
+        if (!kecMap[session.kecamatan]) {
+          kecMap[session.kecamatan] = { scores: [], kabupaten: session.kabupaten };
+        }
+        kecMap[session.kecamatan].scores.push(computeSELScore(session));
+      });
+
+      const rows: SELHeatmapRow[] = Object.entries(kecMap).map(([kec, { scores, kabupaten: kab }]) => {
+        const avg = (key: 'guruTotal' | 'muridTotal') =>
+          Math.round((scores.reduce((a, b) => a + b[key], 0) / scores.length) * 10) / 10;
+
+        const dimensiScores = SEL_DIMENSI_ORDER.reduce((acc, d) => {
+          const vals = scores.map(s => s.dimensi.find(dd => dd.dimensi === d)?.rataRata || 0);
+          acc[d] = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
+          return acc;
+        }, {} as Record<SELDimensi, number>);
+
+        const rataRata = Math.round(
+          (Object.values(dimensiScores).reduce((a, b) => a + b, 0) / SEL_DIMENSI_ORDER.length) * 10
+        ) / 10;
+
+        return {
+          kecamatan: kec,
+          kabupaten: kab,
+          jumlahSekolah: scores.length,
+          dimensiScores,
+          rataRata,
+        };
+      });
+
+      setTimeout(() => resolve(rows.sort((a, b) => b.rataRata - a.rataRata)), 100);
+    });
+  },
+
+  getSELMatriksData: async (filters?: {
+    kabupaten?: string;
+    kecamatan?: string;
+  }): Promise<SELMatriksPoint[]> => {
+    return new Promise(resolve => {
+      let sessions = [...selObservasiData];
+      if (filters?.kabupaten) sessions = sessions.filter(s => s.kabupaten === filters.kabupaten);
+      if (filters?.kecamatan) sessions = sessions.filter(s => s.kecamatan === filters.kecamatan);
+
+      const points: SELMatriksPoint[] = sessions.map(session => {
+        const score = computeSELScore(session);
+        const school = schoolsData.find(s => s.nama === session.sekolahNama || s.kecamatan === session.kecamatan);
+        return {
+          id: session.id,
+          name: session.sekolahNama,
+          kecamatan: session.kecamatan,
+          kuisionerScore: score.kuisionerScore,
+          selScore: score.totalRata,
+          guruSkor: score.guruTotal,
+          muridSkor: score.muridTotal,
+          status: school?.status || 'belum',
+        };
+      });
+
+      setTimeout(() => resolve(points), 100);
+    });
+  },
+
+  getSELSummaryStats: async (): Promise<{
+    totalDiobservasi: number;
+    rataGuruAll: number;
+    rataMuridAll: number;
+    butuhIntervensi: number;
+    topSekolah: string;
+  }> => {
+    return new Promise(resolve => {
+      const scores = selObservasiData.map(s => computeSELScore(s));
+      const totalDiobservasi = scores.length;
+      const rataGuruAll = Math.round((scores.reduce((a, b) => a + b.guruTotal, 0) / totalDiobservasi) * 10) / 10;
+      const rataMuridAll = Math.round((scores.reduce((a, b) => a + b.muridTotal, 0) / totalDiobservasi) * 10) / 10;
+      const butuhIntervensi = scores.filter(s => s.totalRata < 2.5).length;
+      const topSekolah = scores.sort((a, b) => b.totalRata - a.totalRata)[0]?.sekolahNama || '-';
+      setTimeout(() => resolve({ totalDiobservasi, rataGuruAll, rataMuridAll, butuhIntervensi, topSekolah }), 100);
+    });
+  },
+
+  saveObservasiSEL: async (session: Omit<SELObservasiSession, 'id'>): Promise<SELObservasiSession> => {
+    return new Promise(resolve => {
+      const newSession: SELObservasiSession = { ...session, id: 'sel_' + Date.now() };
+      selObservasiData.push(newSession);
+      setTimeout(() => resolve(newSession), 200);
     });
   },
 
