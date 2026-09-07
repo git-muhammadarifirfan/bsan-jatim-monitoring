@@ -3,8 +3,15 @@ import { SEL_INDIKATORS, SEL_DIMENSI_ORDER, SEL_DIMENSI_LABEL } from '../lib/sel
 import type { SELIndikator, SELDimensi, SELSubjek, SELKonteks } from '../lib/sel-indicators';
 import {
   FileText, Plus, Edit3, Trash2, Search, Filter, Save, X, CheckCircle2,
-  AlertCircle, GraduationCap, Users, Building2, Trees, RefreshCw, Eye
+  AlertCircle, GraduationCap, Users, Building2, Trees, Settings2, HelpCircle,
+  XCircle, Clock, CheckCircle, Sparkles, Layers, Sliders
 } from 'lucide-react';
+
+export interface CustomSkorOption {
+  value: 1 | 2 | 3 | 4;
+  label: string;
+  color: string;
+}
 
 export default function KelolaFormSEL() {
   const [indikatorList, setIndikatorList] = useState<SELIndikator[]>(SEL_INDIKATORS);
@@ -12,11 +19,20 @@ export default function KelolaFormSEL() {
   const [selectedSubjek, setSelectedSubjek] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
+  // ─── CUSTOM RESPONSES / SKOR OPTIONS STATE ───
+  const [skorOptions, setSkorOptions] = useState<CustomSkorOption[]>([
+    { value: 1, label: 'Tidak Terlihat', color: '#EF4444' },
+    { value: 2, label: 'Kadang Terlihat', color: '#F59E0B' },
+    { value: 3, label: 'Sering Terlihat', color: '#10B981' },
+    { value: 4, label: 'Konsisten', color: '#4A57C4' },
+  ]);
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSkorModalOpen, setIsSkorModalOpen] = useState(false);
   const [editingInd, setEditingInd] = useState<SELIndikator | null>(null);
 
-  // Form State for Modal
+  // Form State for Indicator Modal
   const [formTeks, setFormTeks] = useState('');
   const [formDimensi, setFormDimensi] = useState<SELDimensi>('kesadaran_diri');
   const [formSubjek, setFormSubjek] = useState<SELSubjek>('guru');
@@ -51,18 +67,17 @@ export default function KelolaFormSEL() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus muatan indikator ini dari instrumen form?')) {
+    if (confirm('Apakah Anda yakin ingin menghapus butir indikator pengamatan ini?')) {
       setIndikatorList(prev => prev.filter(i => i.id !== id));
       showToast('Indikator berhasil dihapus');
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSaveIndikator = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTeks.trim()) return;
 
     if (editingInd) {
-      // Edit
       setIndikatorList(prev =>
         prev.map(i =>
           i.id === editingInd.id
@@ -79,7 +94,6 @@ export default function KelolaFormSEL() {
       );
       showToast('Muatan indikator berhasil diperbarui!');
     } else {
-      // Add New
       const newId = `${formSubjek}_${formDimensi.substring(0, 2)}_${Date.now()}`;
       const newInd: SELIndikator = {
         id: newId,
@@ -96,6 +110,11 @@ export default function KelolaFormSEL() {
     setIsModalOpen(false);
   };
 
+  const handleSaveSkorOption = (val: 1 | 2 | 3 | 4, newLabel: string) => {
+    setSkorOptions(prev => prev.map(o => o.value === val ? { ...o, label: newLabel } : o));
+    showToast(`Opsi Respon Skor ${val} diperbarui menjadi "${newLabel}"`);
+  };
+
   // Filtered List
   const filteredList = indikatorList.filter(ind => {
     if (selectedDimensi && ind.dimensi !== selectedDimensi) return false;
@@ -105,7 +124,7 @@ export default function KelolaFormSEL() {
   });
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto">
+    <div className="space-y-6 max-w-[1400px] mx-auto animate-fade-in">
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-primary text-white px-4 py-3 shadow-xl text-xs font-semibold animate-scale-in">
           <CheckCircle2 className="h-4 w-4 text-emerald-300" />
@@ -114,31 +133,65 @@ export default function KelolaFormSEL() {
       )}
 
       {/* Header Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-primary via-[#5a6bd4] to-accent p-6 text-white shadow-lg relative overflow-hidden">
+      <div className="rounded-2xl bg-gradient-to-r from-primary via-[#5a6bd4] to-accent p-6 text-white shadow-lg relative overflow-hidden animate-slide-up">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-inner">
-              <FileText className="h-6 w-6 text-white" />
+              <Settings2 className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold font-display">Manajemen Muatan Form Observasi SEL</h2>
+              <h2 className="text-xl font-bold font-display">Manajemen Form Observasi SEL (Advance Builder)</h2>
               <p className="text-white/70 text-xs mt-0.5">
-                Kelola CRUD muatan butir indikator instrumen observasi lapangan (BSAN-SEL)
+                Kelola butir indikator, pilihan skala respon, dan struktur form observasi secara bebas & dinamis
               </p>
             </div>
           </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setIsSkorModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm text-xs font-bold transition-smooth cursor-pointer border border-white/30"
+            >
+              <Sliders className="h-4 w-4" /> Pengaturan Skala Respon
+            </button>
+            <button
+              onClick={handleOpenAdd}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white text-primary hover:bg-white/90 text-xs font-bold shadow-md transition-smooth cursor-pointer"
+            >
+              <Plus className="h-4 w-4" /> Tambah Pertanyaan / Indikator
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Skala Respon Live Preview Card */}
+      <div className="rounded-2xl bg-surface border border-border p-5 shadow-card animate-slide-up" style={{ animationDelay: '50ms' }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Sliders className="h-4 w-4 text-primary" />
+            <h3 className="text-xs font-bold text-text-primary uppercase tracking-wide">Pilihan Skala Respon Form Saat Ini</h3>
+          </div>
           <button
-            onClick={handleOpenAdd}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white text-primary hover:bg-white/90 text-xs font-bold shadow-md transition-smooth cursor-pointer"
+            onClick={() => setIsSkorModalOpen(true)}
+            className="text-[11px] font-semibold text-primary hover:text-primary-dark flex items-center gap-1 cursor-pointer"
           >
-            <Plus className="h-4 w-4" /> Tambah Indikator Baru
+            <Edit3 className="h-3 w-3" /> Edit Label Respon
           </button>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {skorOptions.map(opt => (
+            <div key={opt.value} className="p-3 rounded-xl border border-border bg-bg/50 flex flex-col items-center gap-1 text-center">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ backgroundColor: opt.color }}>
+                Skor {opt.value}
+              </span>
+              <span className="text-xs font-bold text-text-primary mt-1">{opt.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Filter & Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between rounded-xl bg-surface border border-border p-4 shadow-card">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between rounded-xl bg-surface border border-border p-4 shadow-card animate-slide-up" style={{ animationDelay: '100ms' }}>
         <div className="flex flex-wrap gap-2.5 items-center w-full sm:w-auto">
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-secondary pointer-events-none" />
@@ -173,17 +226,17 @@ export default function KelolaFormSEL() {
           </select>
         </div>
         <div className="text-xs text-text-secondary font-medium">
-          Total <strong>{filteredList.length}</strong> Butir Indikator
+          Total <strong>{filteredList.length}</strong> Butir Pertanyaan / Indikator
         </div>
       </div>
 
       {/* Table List of Indicators */}
-      <div className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden">
+      <div className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden animate-slide-up" style={{ animationDelay: '150ms' }}>
         <div className="p-4 border-b border-border bg-bg/30 flex items-center justify-between">
           <h3 className="text-sm font-bold text-text-primary font-display flex items-center gap-2">
-            <FileText className="h-4 w-4 text-primary" /> Daftar Muatan Butir Instrumen
+            <FileText className="h-4 w-4 text-primary" /> Daftar Muatan Form Observasi
           </h3>
-          <span className="text-[11px] text-text-secondary">Dapat diubah / ditambah sewaktu-waktu oleh Admin</span>
+          <span className="text-[11px] text-text-secondary">Kelola teks pertanyaan, subjek & catatan pembimbing</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[750px]">
@@ -192,7 +245,7 @@ export default function KelolaFormSEL() {
                 <th className="py-3 px-4 text-left text-[10px] font-bold text-text-secondary uppercase">Subjek & Konteks</th>
                 <th className="py-3 px-4 text-left text-[10px] font-bold text-text-secondary uppercase">Dimensi SEL</th>
                 <th className="py-3 px-4 text-left text-[10px] font-bold text-text-secondary uppercase">Teks Indikator Pengamatan</th>
-                <th className="py-3 px-4 text-left text-[10px] font-bold text-text-secondary uppercase">Petunjuk / Catatan Observer</th>
+                <th className="py-3 px-4 text-left text-[10px] font-bold text-text-secondary uppercase">Petunjuk Observer</th>
                 <th className="py-3 px-3 text-center text-[10px] font-bold text-text-secondary uppercase">Aksi</th>
               </tr>
             </thead>
@@ -204,8 +257,8 @@ export default function KelolaFormSEL() {
                   </td>
                 </tr>
               ) : (
-                filteredList.map(ind => (
-                  <tr key={ind.id} className="border-b border-border/40 hover:bg-bg/30 transition-colors">
+                filteredList.map((ind, idx) => (
+                  <tr key={ind.id} className="border-b border-border/40 hover:bg-bg/30 transition-colors animate-slide-up" style={{ animationDelay: `${idx * 20}ms` }}>
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       <div className="flex flex-col gap-1">
                         <span
@@ -234,7 +287,7 @@ export default function KelolaFormSEL() {
                           <AlertCircle className="h-3 w-3 text-text-secondary/70 shrink-0" /> {ind.catatan}
                         </p>
                       ) : (
-                        <span className="text-text-secondary/40">—</span>
+                        <span className="text-text-secondary/40">Tidak ada petunjuk</span>
                       )}
                     </td>
                     <td className="py-3.5 px-3 text-center whitespace-nowrap">
@@ -263,15 +316,15 @@ export default function KelolaFormSEL() {
         </div>
       </div>
 
-      {/* Modal Add/Edit */}
+      {/* Modal Add/Edit Indicator */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-lg overflow-hidden animate-scale-in">
             <div className="flex items-center justify-between p-5 border-b border-border bg-surface">
               <div className="flex items-center gap-2">
                 <Edit3 className="h-5 w-5 text-primary" />
                 <h3 className="font-bold text-text-primary text-base font-display">
-                  {editingInd ? 'Edit Muatan Indikator' : 'Tambah Indikator Observasi Baru'}
+                  {editingInd ? 'Edit Pertanyaan / Indikator' : 'Tambah Pertanyaan / Indikator Baru'}
                 </h3>
               </div>
               <button
@@ -282,7 +335,7 @@ export default function KelolaFormSEL() {
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="p-5 space-y-4 text-xs">
+            <form onSubmit={handleSaveIndikator} className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-bold text-text-secondary uppercase text-[10px]">Subjek Pengamatan</label>
@@ -336,7 +389,7 @@ export default function KelolaFormSEL() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-text-secondary uppercase text-[10px]">Petunjuk / Catatan Tambahan Observer (Opsional)</label>
+                <label className="font-bold text-text-secondary uppercase text-[10px]">Petunjuk Observer (Opsional)</label>
                 <textarea
                   rows={2}
                   value={formCatatan}
@@ -362,6 +415,57 @@ export default function KelolaFormSEL() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edit Skala Respon */}
+      {isSkorModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-md overflow-hidden animate-scale-in">
+            <div className="flex items-center justify-between p-5 border-b border-border bg-surface">
+              <div className="flex items-center gap-2">
+                <Sliders className="h-5 w-5 text-primary" />
+                <h3 className="font-bold text-text-primary text-base font-display">Kustomisasi Label Skala Respon</h3>
+              </div>
+              <button
+                onClick={() => setIsSkorModalOpen(false)}
+                className="p-1.5 rounded-lg text-text-secondary hover:bg-border/40 transition-smooth cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 text-xs">
+              <p className="text-text-secondary leading-relaxed">
+                Ubah label teks untuk masing-masing opsi rating skor (1–4) yang akan muncul pada form pengisian user:
+              </p>
+              <div className="space-y-3">
+                {skorOptions.map(opt => (
+                  <div key={opt.value} className="space-y-1">
+                    <label className="font-bold uppercase text-[10px] flex items-center gap-1.5" style={{ color: opt.color }}>
+                      <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: opt.color }} />
+                      Skor {opt.value} Label
+                    </label>
+                    <input
+                      type="text"
+                      value={opt.label}
+                      onChange={e => handleSaveSkorOption(opt.value, e.target.value)}
+                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-text-primary font-semibold focus:border-primary focus:outline-none"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border pt-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsSkorModalOpen(false)}
+                  className="px-5 py-2 rounded-xl bg-primary text-white font-bold shadow-sm hover:bg-primary-dark transition-smooth cursor-pointer"
+                >
+                  Selesai
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
