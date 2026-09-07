@@ -25,8 +25,8 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
       title: 'DATA & INPUT',
       items: [
         { name: 'Kuisioner BSAN', path: '/kuisioner', icon: BookOpen },
-        { name: 'Sesi Observasi SEL', path: '/observasi-sel', icon: ClipboardList, badge: 'SEL' },
-        { name: 'Manaj. Form Observasi', path: '/kelola-form-sel', icon: Settings, badge: 'CRUD' },
+        { name: 'Form Observasi', path: '/kelola-form-sel', icon: Settings, badge: 'CRUD' },
+        { name: 'Data Observasi SEL', path: '/observasi-sel', icon: ClipboardList, badge: 'SEL' },
         { name: 'Data Responden', path: '/responden', icon: Users },
         { name: 'Data Satuan Pendidikan', path: '/sekolah', icon: School },
       ],
@@ -90,9 +90,8 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col bg-surface border-r border-border shadow-soft transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col bg-surface border-r border-border shadow-soft transition-transform duration-300 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         {/* Brand Header */}
         <div className="flex h-[72px] items-center justify-between px-5">
@@ -130,10 +129,9 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
                       to={item.path}
                       onClick={() => setIsOpen(false)}
                       className={({ isActive }) =>
-                        `group flex items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200 ${
-                          isActive
-                            ? 'bg-primary text-white shadow-md shadow-primary/20 font-bold'
-                            : 'text-text-secondary hover:bg-bg hover:text-text-primary'
+                        `group flex items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200 ${isActive
+                          ? 'bg-primary text-white shadow-md shadow-primary/20 font-bold'
+                          : 'text-text-secondary hover:bg-bg hover:text-text-primary'
                         }`
                       }
                     >
@@ -144,9 +142,8 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
                             <span>{item.name}</span>
                           </div>
                           {badge && (
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
-                              isActive ? 'bg-white/20 text-white' : 'bg-accent/10 text-accent'
-                            }`}>
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${isActive ? 'bg-white/20 text-white' : 'bg-accent/10 text-accent'
+                              }`}>
                               {badge}
                             </span>
                           )}
