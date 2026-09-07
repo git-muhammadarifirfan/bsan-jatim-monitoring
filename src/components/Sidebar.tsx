@@ -2,7 +2,7 @@ import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard, Map, BookOpen, Users, School, BarChart3,
   Layers, Grid3X3, AlertTriangle, MessageSquare, FileSpreadsheet,
-  Settings, LogOut, X, PieChart
+  Settings, LogOut, X, PieChart, Brain, ClipboardList
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -40,6 +40,13 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
       ],
     },
     {
+      title: 'OBSERVASI SEL',
+      items: [
+        { name: 'Kelola Sesi Observasi', path: '/observasi-sel', icon: ClipboardList },
+        { name: 'Analisis SEL', path: '/analisis-sel', icon: Brain, badge: 'Baru' },
+      ],
+    },
+    {
       title: 'INSIGHT',
       items: [
         { name: 'Suara Responden', path: '/suara', icon: MessageSquare, badge: 'Fase 2' },
@@ -65,6 +72,7 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
       items: [
         { name: 'Dashboard', path: '/', icon: LayoutDashboard },
         { name: 'Isi Survey BSAN', path: '/kuisioner', icon: BookOpen },
+        { name: 'Isi Observasi Lapangan', path: '/observasi-sel', icon: ClipboardList, badge: 'SEL' },
         { name: 'Peta Sekolah & Wilayah', path: '/map', icon: Map },
         { name: 'Profil Sekolah', path: '/sekolah', icon: School },
         { name: 'Suara Responden', path: '/suara', icon: MessageSquare },
