@@ -506,11 +506,10 @@ function ObservasiFormWizard({ onSubmitDone }: { onSubmitDone: () => void }) {
 //  BAGIAN 3: ADMIN CRUD PANEL
 // ══════════════════════════════════════════════════════════════
 
-function SessionDetailModal({ session, onClose, onDelete, onEdit }: {
+function SessionDetailModal({ session, onClose, onDelete }: {
   session: SELObservasiSession;
   onClose: () => void;
   onDelete: (id: string) => void;
-  onEdit: (session: SELObservasiSession) => void;
 }) {
   // Compute scores per dimensi for display
   const jawabanMap: Record<string, SELSkor | null> = {};
@@ -601,17 +600,12 @@ function SessionDetailModal({ session, onClose, onDelete, onEdit }: {
           )}
 
           {/* Action buttons */}
-          <div className="border-t border-border pt-4 flex items-center justify-between">
+          <div className="border-t border-border pt-4 flex items-center justify-end">
             <button
               onClick={() => { onDelete(session.id); onClose(); }}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-status-belum/10 border border-status-belum/20 text-status-belum text-xs font-bold hover:bg-status-belum/20 transition-smooth">
               <Trash2 className="h-3.5 w-3.5" /> Hapus Sesi
             </button>
-            <button
-              onClick={() => { onEdit(session); onClose(); }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:bg-primary-dark transition-smooth">
-              <Edit3 className="h-3.5 w-3.5" /> Edit Data Sesi
-            </button>
           </div>
         </div>
       </div>
@@ -619,111 +613,12 @@ function SessionDetailModal({ session, onClose, onDelete, onEdit }: {
   );
 }
 
-function EditSessionModal({ session, onClose, onSave }: {
-  session: SELObservasiSession;
-  onClose: () => void;
-  onSave: (updated: SELObservasiSession) => void;
-}) {
-  const [sekolahNama, setSekolahNama] = useState(session.sekolahNama);
-  const [observerNama, setObserverNama] = useState(session.observerNama || '');
-  const [tanggal, setTanggal] = useState(session.tanggal);
-  const [kelasDiamati, setKelasDiamati] = useState(session.kelasDiamati || '');
-  const [namaGuruInisial, setNamaGuruInisial] = useState(session.namaGuruInisial || '');
-  const [mataPelajaran, setMataPelajaran] = useState(session.mataPelajaran || '');
-  const [status, setStatus] = useState(session.status);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave({
-      ...session,
-      sekolahNama,
-      observerNama,
-      tanggal,
-      kelasDiamati,
-      namaGuruInisial,
-      mataPelajaran,
-      status,
-    });
-  };
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-lg overflow-hidden">
-        <div className="flex items-center justify-between p-5 border-b border-border bg-surface">
-          <div className="flex items-center gap-2">
-            <Edit3 className="h-4 w-4 text-primary" />
-            <h3 className="font-bold text-text-primary text-base font-display">Edit Sesi Observasi</h3>
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-text-secondary hover:bg-border/40 transition-smooth">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
-          <div className="space-y-1">
-            <label className="font-bold text-text-secondary uppercase text-[10px]">Nama Sekolah</label>
-            <input type="text" value={sekolahNama} onChange={e => setSekolahNama(e.target.value)} required
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="font-bold text-text-secondary uppercase text-[10px]">Observer</label>
-              <input type="text" value={observerNama} onChange={e => setObserverNama(e.target.value)}
-                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
-            </div>
-            <div className="space-y-1">
-              <label className="font-bold text-text-secondary uppercase text-[10px]">Tanggal</label>
-              <input type="date" value={tanggal} onChange={e => setTanggal(e.target.value)}
-                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <label className="font-bold text-text-secondary uppercase text-[10px]">Kelas</label>
-              <input type="text" value={kelasDiamati} onChange={e => setKelasDiamati(e.target.value)}
-                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
-            </div>
-            <div className="space-y-1">
-              <label className="font-bold text-text-secondary uppercase text-[10px]">Guru Inisial</label>
-              <input type="text" value={namaGuruInisial} onChange={e => setNamaGuruInisial(e.target.value)}
-                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
-            </div>
-            <div className="space-y-1">
-              <label className="font-bold text-text-secondary uppercase text-[10px]">Mata Pelajaran</label>
-              <input type="text" value={mataPelajaran} onChange={e => setMataPelajaran(e.target.value)}
-                className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none" />
-            </div>
-          </div>
-          <div className="space-y-1">
-            <label className="font-bold text-text-secondary uppercase text-[10px]">Status Observasi</label>
-            <select value={status} onChange={e => setStatus(e.target.value as 'draft' | 'submitted')}
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2.5 text-text-primary focus:border-primary focus:outline-none font-semibold">
-              <option value="submitted">Submitted (Selesai)</option>
-              <option value="draft">Draft (Belum Selesai)</option>
-            </select>
-          </div>
-          <div className="border-t border-border pt-4 flex justify-end gap-2">
-            <button type="button" onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-border text-text-secondary font-semibold hover:bg-bg transition-smooth">
-              Batal
-            </button>
-            <button type="submit"
-              className="px-5 py-2 rounded-xl bg-primary text-white font-bold shadow-sm hover:bg-primary-dark transition-smooth flex items-center gap-1.5">
-              <Save className="h-3.5 w-3.5" /> Simpan Perubahan
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function AdminObservasiPanel() {
   const queryClient = useQueryClient();
   const [selectedKab, setSelectedKab] = useState('');
   const [search, setSearch] = useState('');
   const [selectedSession, setSelectedSession] = useState<SELObservasiSession | null>(null);
-  const [editingSession, setEditingSession] = useState<SELObservasiSession | null>(null);
-  const [customSessions, setCustomSessions] = useState<Record<string, SELObservasiSession>>({});
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const { data: rawSessions = [], isLoading, refetch } = useQuery({
@@ -736,7 +631,7 @@ function AdminObservasiPanel() {
     queryFn: database.getSELSummaryStats,
   });
 
-  const sessions = rawSessions.map(s => customSessions[s.id] || s);
+  const sessions = rawSessions;
 
   const visibleSessions = sessions
     .filter(s => !deletedIds.has(s.id))
@@ -752,11 +647,6 @@ function AdminObservasiPanel() {
     queryClient.invalidateQueries({ queryKey: ['selStats'] });
   };
 
-  const handleSaveEdit = (updated: SELObservasiSession) => {
-    setCustomSessions(prev => ({ ...prev, [updated.id]: updated }));
-    setEditingSession(null);
-  };
-
   return (
     <div className="space-y-5">
       {selectedSession && (
@@ -764,15 +654,6 @@ function AdminObservasiPanel() {
           session={selectedSession}
           onClose={() => setSelectedSession(null)}
           onDelete={handleDelete}
-          onEdit={s => setEditingSession(s)}
-        />
-      )}
-
-      {editingSession && (
-        <EditSessionModal
-          session={editingSession}
-          onClose={() => setEditingSession(null)}
-          onSave={handleSaveEdit}
         />
       )}
 
