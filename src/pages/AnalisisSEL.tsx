@@ -241,13 +241,13 @@ export default function AnalisisSEL() {
   ] as const;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 animate-fade-in">
       {selectedScore && (
         <DetailModal score={selectedScore} onClose={() => setSelectedScore(null)} />
       )}
 
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-r from-primary via-[#5a6bd4] to-accent p-6 text-white shadow-lg relative overflow-hidden">
+      <div className="rounded-2xl bg-gradient-to-r from-primary via-[#5a6bd4] to-accent p-6 text-white shadow-lg relative overflow-hidden animate-slide-up">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
         <div className="relative z-10">
           <div className="flex items-center gap-2.5 mb-2">
@@ -256,7 +256,7 @@ export default function AnalisisSEL() {
             </div>
             <div>
               <h2 className="text-xl font-bold font-display">Analisis Observasi SEL</h2>
-              <p className="text-white/70 text-[11px]">Social-Emotional Learning — BSAN Jawa Timur</p>
+              <p className="text-white/70 text-[11px]">Social-Emotional Learning • BSAN Jawa Timur</p>
             </div>
           </div>
           {stats && (
@@ -278,7 +278,7 @@ export default function AnalisisSEL() {
       </div>
 
       {/* Kabupaten Filter + Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-surface border border-border p-3 shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-surface border border-border p-3 shadow-card animate-slide-up" style={{ animationDelay: '100ms' }}>
         <div className="flex gap-1 flex-wrap">
           {tabs.map(tab => {
             const Icon = tab.icon;
@@ -286,7 +286,7 @@ export default function AnalisisSEL() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-smooth ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-smooth cursor-pointer ${
                   activeTab === tab.id ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:bg-bg hover:text-text-primary'
                 }`}
               >
@@ -307,11 +307,11 @@ export default function AnalisisSEL() {
 
       {/* ═══ TAB: OVERVIEW ═══ */}
       {activeTab === 'overview' && (
-        <div className="space-y-5">
+        <div className="space-y-5 animate-fade-in">
           {/* Radar + Bar side by side */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Radar Chart */}
-            <div className="rounded-2xl bg-surface border border-border shadow-card p-5">
+            <div className="rounded-2xl bg-surface border border-border shadow-card p-5 animate-scale-in">
               <h3 className="text-sm font-bold text-text-primary font-display mb-1">Radar 5 Dimensi SEL</h3>
               <p className="text-[11px] text-text-secondary mb-4">Rata-rata semua sekolah yang diobservasi</p>
               <div className="h-64">
@@ -332,7 +332,7 @@ export default function AnalisisSEL() {
             </div>
 
             {/* Bar Chart Guru vs Murid */}
-            <div className="rounded-2xl bg-surface border border-border shadow-card p-5">
+            <div className="rounded-2xl bg-surface border border-border shadow-card p-5 animate-scale-in" style={{ animationDelay: '100ms' }}>
               <h3 className="text-sm font-bold text-text-primary font-display mb-1">Perbandingan Guru vs Murid</h3>
               <p className="text-[11px] text-text-secondary mb-4">Rata-rata skor per dimensi (skala 1–4)</p>
               <div className="h-64">
@@ -356,15 +356,17 @@ export default function AnalisisSEL() {
 
           {/* Summary Cards per Dimensi */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-            {SEL_DIMENSI_ORDER.map(d => {
+            {SEL_DIMENSI_ORDER.map((d, i) => {
               const vals = scores.map(s => s.dimensi.find(dd => dd.dimensi === d)?.rataRata || 0);
               const avg = vals.length ? Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10 : 0;
               const kat = skorKategori(avg);
               return (
-                <div key={d} className="rounded-xl bg-surface border border-border shadow-card p-4 text-center">
+                <div key={d} className="rounded-xl bg-surface border border-border shadow-card p-4 text-center animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
                   <div className="w-2.5 h-2.5 rounded-full mx-auto mb-2" style={{ backgroundColor: SEL_COLORS[d] }} />
                   <div className="text-[10px] text-text-secondary font-bold uppercase tracking-wide leading-tight mb-1">{SEL_DIMENSI_LABEL[d]}</div>
-                  <div className="text-2xl font-bold font-display" style={{ color: kat.color }}>{avg.toFixed(1)}</div>
+                  <div className="text-2xl font-bold font-display" style={{ color: kat.color }}>
+                    <AnimatedCounter value={avg} decimals={1} />
+                  </div>
                   <div className="text-[9px] text-text-secondary mt-0.5">/4 · {kat.label}</div>
                 </div>
               );
@@ -373,7 +375,7 @@ export default function AnalisisSEL() {
 
           {/* Insight Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-2xl bg-primary/5 border border-primary/15 p-5">
+            <div className="rounded-2xl bg-primary/5 border border-primary/15 p-5 animate-slide-up">
               <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Dimensi Terkuat</h4>
               {scores.length > 0 && (() => {
                 const dimensiAvgs = SEL_DIMENSI_ORDER.map(d => {
@@ -390,7 +392,7 @@ export default function AnalisisSEL() {
               })()}
             </div>
 
-            <div className="rounded-2xl bg-status-belum/5 border border-status-belum/15 p-5">
+            <div className="rounded-2xl bg-status-belum/5 border border-status-belum/15 p-5 animate-slide-up" style={{ animationDelay: '100ms' }}>
               <h4 className="text-sm font-bold text-status-belum mb-3 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Perlu Perhatian</h4>
               {scores.length > 0 && (() => {
                 const dimensiAvgs = SEL_DIMENSI_ORDER.map(d => {
@@ -412,7 +414,7 @@ export default function AnalisisSEL() {
 
       {/* ═══ TAB: HEATMAP ═══ */}
       {activeTab === 'heatmap' && (
-        <div className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden">
+        <div className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden animate-fade-in">
           <div className="p-5 border-b border-border">
             <h3 className="text-sm font-bold text-text-primary font-display">Heatmap SEL per Kecamatan × Dimensi</h3>
             <p className="text-[11px] text-text-secondary mt-0.5">
@@ -439,8 +441,8 @@ export default function AnalisisSEL() {
                 ) : heatmap.length === 0 ? (
                   <tr><td colSpan={8} className="py-12 text-center text-text-secondary text-xs">Belum ada data observasi.</td></tr>
                 ) : (
-                  heatmap.map(row => (
-                    <tr key={row.kecamatan} className="hover:bg-bg/30 transition-colors">
+                  heatmap.map((row, idx) => (
+                    <tr key={row.kecamatan} className="hover:bg-bg/30 transition-colors animate-slide-up" style={{ animationDelay: `${idx * 40}ms` }}>
                       <td className="px-4 py-2.5 font-semibold text-text-primary sticky left-0 bg-surface border-b border-border/30">
                         {row.kecamatan}
                         <span className="block text-[9px] text-text-secondary font-normal">{row.kabupaten}</span>
@@ -469,7 +471,7 @@ export default function AnalisisSEL() {
 
       {/* ═══ TAB: CROSS VALIDASI ═══ */}
       {activeTab === 'matriks' && (
-        <div className="space-y-5">
+        <div className="space-y-5 animate-fade-in">
           {/* Quadrant Counters */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
@@ -477,8 +479,8 @@ export default function AnalisisSEL() {
               { label: 'Hidden Gem', sub: 'Klaim rendah, Observasi tinggi', count: q2, color: 'text-primary', bg: 'border-primary/20', desc: 'Dorong melengkapi kuesioner' },
               { label: 'Overclaimer', sub: 'Klaim tinggi, Observasi rendah', count: q3, color: 'text-status-sebagian', bg: 'border-status-sebagian/20', desc: 'Perlu verifikasi lapangan' },
               { label: 'Intervensi', sub: 'Klaim & Observasi rendah', count: q4, color: 'text-status-belum', bg: 'border-status-belum/20', desc: 'Prioritas pendampingan' },
-            ].map(item => (
-              <div key={item.label} className={`rounded-2xl bg-surface border ${item.bg} shadow-card p-5`}>
+            ].map((item, idx) => (
+              <div key={item.label} className={`rounded-2xl bg-surface border ${item.bg} shadow-card p-5 animate-slide-up`} style={{ animationDelay: `${idx * 60}ms` }}>
                 <span className={`text-[9px] font-black uppercase tracking-wider ${item.color}`}>{item.label}</span>
                 <h3 className={`text-2xl font-black font-display mt-1 ${item.color}`}>
                   <AnimatedCounter value={item.count} suffix=" SD" />
@@ -490,7 +492,7 @@ export default function AnalisisSEL() {
           </div>
 
           {/* Scatter Plot */}
-          <div className="rounded-2xl bg-surface border border-border shadow-card p-5">
+          <div className="rounded-2xl bg-surface border border-border shadow-card p-5 animate-scale-in">
             <div className="mb-4">
               <h3 className="text-sm font-bold text-text-primary font-display">Scatter Plot: Kuesioner vs Observasi SEL</h3>
               <p className="text-[11px] text-text-secondary mt-0.5">
@@ -550,7 +552,7 @@ export default function AnalisisSEL() {
 
       {/* ═══ TAB: DAFTAR SEKOLAH ═══ */}
       {activeTab === 'daftar' && (
-        <div className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden">
+        <div className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden animate-fade-in">
           <div className="p-5 border-b border-border flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold text-text-primary font-display">Daftar Hasil Observasi SEL</h3>
@@ -579,11 +581,12 @@ export default function AnalisisSEL() {
                 ) : scores.length === 0 ? (
                   <tr><td colSpan={10} className="py-12 text-center text-text-secondary">Belum ada data.</td></tr>
                 ) : (
-                  scores.sort((a, b) => b.totalRata - a.totalRata).map(score => (
+                  scores.sort((a, b) => b.totalRata - a.totalRata).map((score, idx) => (
                     <tr
                       key={score.sekolahId}
                       onClick={() => setSelectedScore(score)}
-                      className="border-b border-border/40 hover:bg-bg/30 cursor-pointer transition-colors"
+                      className="border-b border-border/40 hover:bg-bg/30 cursor-pointer transition-colors animate-slide-up"
+                      style={{ animationDelay: `${idx * 30}ms` }}
                     >
                       <td className="py-3 px-4">
                         <p className="font-semibold text-text-primary">{score.sekolahNama}</p>
