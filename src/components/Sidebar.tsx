@@ -24,7 +24,8 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
     {
       title: 'DATA & INPUT',
       items: [
-        { name: 'Kuisioner', path: '/kuisioner', icon: BookOpen },
+        { name: 'Kuisioner BSAN', path: '/kuisioner', icon: BookOpen },
+        { name: 'Observasi SEL (Form)', path: '/observasi-sel', icon: ClipboardList, badge: 'SEL' },
         { name: 'Data Responden', path: '/responden', icon: Users },
         { name: 'Data Satuan Pendidikan', path: '/sekolah', icon: School },
       ],
@@ -32,18 +33,12 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
     {
       title: 'ANALISIS',
       items: [
+        { name: 'Analisis SEL', path: '/analisis-sel', icon: Brain, badge: 'Baru' },
         { name: 'Modul BSAN', path: '/modul', icon: BarChart3 },
         { name: 'Proporsi Modul', path: '/proporsi', icon: PieChart },
         { name: 'Analisis Gap Funnel', path: '/funnel', icon: Layers },
         { name: 'Matriks 4 Kuadran', path: '/matriks', icon: Grid3X3 },
         { name: 'Tantangan Implementasi', path: '/tantangan', icon: AlertTriangle },
-      ],
-    },
-    {
-      title: 'OBSERVASI SEL',
-      items: [
-        { name: 'Kelola Sesi Observasi', path: '/observasi-sel', icon: ClipboardList },
-        { name: 'Analisis SEL', path: '/analisis-sel', icon: Brain, badge: 'Baru' },
       ],
     },
     {
