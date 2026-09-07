@@ -25,7 +25,8 @@ export default function Sidebar({ isOpen, setIsOpen, userRole, onLogout }: Sideb
       title: 'DATA & INPUT',
       items: [
         { name: 'Kuisioner BSAN', path: '/kuisioner', icon: BookOpen },
-        { name: 'Observasi SEL (Form)', path: '/observasi-sel', icon: ClipboardList, badge: 'SEL' },
+        { name: 'Sesi Observasi SEL', path: '/observasi-sel', icon: ClipboardList, badge: 'SEL' },
+        { name: 'Manaj. Form Observasi', path: '/kelola-form-sel', icon: Settings, badge: 'CRUD' },
         { name: 'Data Responden', path: '/responden', icon: Users },
         { name: 'Data Satuan Pendidikan', path: '/sekolah', icon: School },
       ],

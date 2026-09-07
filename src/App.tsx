@@ -21,6 +21,7 @@ import LaporanEkspor from './pages/LaporanEkspor';
 import Setting from './pages/Setting';
 import ObservasiSEL from './pages/ObservasiSEL';
 import AnalisisSEL from './pages/AnalisisSEL';
+import KelolaFormSEL from './pages/KelolaFormSEL';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, staleTime: 1000 * 60 * 5 } },
@@ -81,6 +82,7 @@ function AppContent({
                   <Route path="/suara" element={<SuaraResponden activeKecamatan={activeKecamatan} userRole={userRole} />} />
                   <Route path="/laporan" element={<LaporanEkspor />} />
                   <Route path="/observasi-sel" element={<ObservasiSEL userRole="admin" />} />
+                  <Route path="/kelola-form-sel" element={<KelolaFormSEL />} />
                   <Route path="/analisis-sel" element={<AnalisisSEL />} />
                   <Route path="/setting" element={<Setting />} />
                   <Route path="*" element={<Dashboard activeKecamatan={activeKecamatan} setActiveKecamatan={setActiveKecamatan} userRole={userRole} />} />
