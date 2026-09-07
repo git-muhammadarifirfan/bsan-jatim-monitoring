@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { SEL_INDIKATORS, SEL_DIMENSI_ORDER, SEL_DIMENSI_LABEL } from '../lib/sel-indicators';
 import type { SELIndikator, SELDimensi, SELSubjek, SELKonteks } from '../lib/sel-indicators';
+import { ObservasiFormWizard } from './ObservasiSEL';
 import {
   FileText, Plus, Edit3, Trash2, Search, Filter, Save, X, CheckCircle2,
-  AlertCircle, GraduationCap, Users, Building2, Trees, Settings2, HelpCircle,
-  XCircle, Clock, CheckCircle, Sparkles, Layers, Sliders, Brain
+  AlertCircle, GraduationCap, Users, Building2, Trees, Settings2, Eye,
+  XCircle, Clock, CheckCircle, Sparkles, Brain, MapPin, ChevronRight,
+  School, ClipboardList
 } from 'lucide-react';
 
 export interface CustomSkorOption {
@@ -19,17 +21,17 @@ export default function KelolaFormSEL() {
   const [selectedSubjek, setSelectedSubjek] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
-  // ─── CUSTOM RESPONSES / SKOR OPTIONS STATE ───
-  const [skorOptions, setSkorOptions] = useState<CustomSkorOption[]>([
+  // Skor Options (Fixed standard response scale)
+  const skorOptions: CustomSkorOption[] = [
     { value: 1, label: 'Tidak Terlihat', color: '#EF4444' },
     { value: 2, label: 'Kadang Terlihat', color: '#F59E0B' },
     { value: 3, label: 'Sering Terlihat', color: '#10B981' },
     { value: 4, label: 'Konsisten', color: '#4A57C4' },
-  ]);
+  ];
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSkorModalOpen, setIsSkorModalOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [editingInd, setEditingInd] = useState<SELIndikator | null>(null);
 
   // Form State for Indicator Modal
@@ -110,11 +112,6 @@ export default function KelolaFormSEL() {
     setIsModalOpen(false);
   };
 
-  const handleSaveSkorOption = (val: 1 | 2 | 3 | 4, newLabel: string) => {
-    setSkorOptions(prev => prev.map(o => o.value === val ? { ...o, label: newLabel } : o));
-    showToast(`Opsi Respon Skor ${val} diperbarui menjadi "${newLabel}"`);
-  };
-
   // Filtered List
   const filteredList = indikatorList.filter(ind => {
     if (selectedDimensi && ind.dimensi !== selectedDimensi) return false;
@@ -141,18 +138,18 @@ export default function KelolaFormSEL() {
               <Settings2 className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold font-display">Manajemen Form Observasi SEL (Advance Builder)</h2>
+              <h2 className="text-xl font-bold font-display">Manajemen Form Observasi SEL</h2>
               <p className="text-white/70 text-xs mt-0.5">
-                Kelola butir indikator, pilihan skala respon, dan struktur form observasi secara bebas & dinamis
+                Kelola butir indikator pengamatan secara terstruktur, konsisten, dan mudah diatur
               </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setIsSkorModalOpen(true)}
+              onClick={() => setIsPreviewOpen(true)}
               className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm text-xs font-bold transition-smooth cursor-pointer border border-white/30"
             >
-              <Sliders className="h-4 w-4" /> Pengaturan Skala Respon
+              <Eye className="h-4 w-4" /> Preview Tampilan User
             </button>
             <button
               onClick={handleOpenAdd}
@@ -164,34 +161,8 @@ export default function KelolaFormSEL() {
         </div>
       </div>
 
-      {/* Skala Respon Live Preview Card */}
-      <div className="rounded-2xl bg-surface border border-border p-5 shadow-card animate-slide-up" style={{ animationDelay: '50ms' }}>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-primary" />
-            <h3 className="text-xs font-bold text-text-primary uppercase tracking-wide">Pilihan Skala Respon Form Saat Ini</h3>
-          </div>
-          <button
-            onClick={() => setIsSkorModalOpen(true)}
-            className="text-[11px] font-semibold text-primary hover:text-primary-dark flex items-center gap-1 cursor-pointer"
-          >
-            <Edit3 className="h-3 w-3" /> Edit Label Respon
-          </button>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {skorOptions.map(opt => (
-            <div key={opt.value} className="p-3 rounded-xl border border-border bg-bg/50 flex flex-col items-center gap-1 text-center">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ backgroundColor: opt.color }}>
-                Skor {opt.value}
-              </span>
-              <span className="text-xs font-bold text-text-primary mt-1">{opt.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Filter & Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between rounded-xl bg-surface border border-border p-4 shadow-card animate-slide-up" style={{ animationDelay: '100ms' }}>
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between rounded-xl bg-surface border border-border p-4 shadow-card animate-slide-up" style={{ animationDelay: '50ms' }}>
         <div className="flex flex-wrap gap-2.5 items-center w-full sm:w-auto">
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-secondary pointer-events-none" />
@@ -230,18 +201,16 @@ export default function KelolaFormSEL() {
         </div>
       </div>
 
-      {/* Grouped Preview by Dimensi & Subjek */}
+      {/* Grouped Editor Cards by Dimensi & Subjek */}
       <div className="space-y-6">
         {SEL_DIMENSI_ORDER.filter(d => !selectedDimensi || d === selectedDimensi).map((dimensi, dIdx) => (
-          <div key={dimensi} className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden animate-slide-up" style={{ animationDelay: `${150 + dIdx * 50}ms` }}>
-            <div className="p-5 border-b border-border bg-bg/30 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-text-primary font-display flex items-center gap-2">
-                  <Brain className="h-4 w-4 text-primary" /> Dimensi: {SEL_DIMENSI_LABEL[dimensi]}
-                </h3>
-              </div>
+          <div key={dimensi} className="rounded-2xl bg-surface border border-border shadow-card overflow-hidden animate-slide-up" style={{ animationDelay: `${100 + dIdx * 40}ms` }}>
+            <div className="p-4 border-b border-border bg-bg/30 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-text-primary font-display flex items-center gap-2">
+                <Brain className="h-4 w-4 text-primary" /> Dimensi: {SEL_DIMENSI_LABEL[dimensi]}
+              </h3>
             </div>
-            
+
             <div className="p-5 space-y-6">
               {(['guru', 'murid'] as const).filter(s => !selectedSubjek || s === selectedSubjek).map(subjek => {
                 const inds = filteredList.filter(i => i.dimensi === dimensi && i.subjek === subjek);
@@ -255,65 +224,65 @@ export default function KelolaFormSEL() {
                         </span>
                         <div className={`h-px w-12 ${subjek === 'guru' ? 'bg-primary/20' : 'bg-accent/20'}`} />
                       </div>
-                      <button 
+                      <button
                         onClick={() => {
                           handleOpenAdd();
                           setFormDimensi(dimensi);
                           setFormSubjek(subjek);
                         }}
-                        className={`text-[10px] font-bold flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-                          subjek === 'guru' 
-                            ? 'text-primary bg-primary/10 hover:bg-primary/20' 
+                        className={`text-[10px] font-bold flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                          subjek === 'guru'
+                            ? 'text-primary bg-primary/10 hover:bg-primary/20'
                             : 'text-accent bg-accent/10 hover:bg-accent/20'
                         }`}
                       >
                         <Plus className="h-3 w-3" /> Tambah Indikator
                       </button>
                     </div>
-                    
+
                     {inds.length === 0 ? (
-                      <div className="p-6 text-center text-text-secondary text-xs bg-bg/30 border border-dashed border-border rounded-xl">
+                      <div className="p-5 text-center text-text-secondary text-xs bg-bg/30 border border-dashed border-border rounded-xl">
                         Belum ada indikator untuk subjek {subjek} pada dimensi ini.
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-2.5">
                         {inds.map(ind => (
-                          <div key={ind.id} className="rounded-xl border border-border bg-bg/30 p-4 space-y-3 transition-all duration-200 hover:border-primary/30 hover:shadow-sm relative group">
-                            <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button onClick={() => handleOpenEdit(ind)} className="p-1.5 rounded-lg bg-white border border-border text-primary hover:bg-primary/10 shadow-sm cursor-pointer" title="Edit">
-                                <Edit3 className="h-3.5 w-3.5" />
-                              </button>
-                              <button onClick={() => handleDelete(ind.id)} className="p-1.5 rounded-lg bg-white border border-border text-status-belum hover:bg-status-belum/10 shadow-sm cursor-pointer" title="Hapus">
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-                            
-                            <div>
-                              <div className="flex flex-wrap items-center gap-1.5 mb-1.5 pr-16">
-                                <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${ind.subjek === 'guru' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
-                                  {ind.subjek === 'guru' ? <GraduationCap className="h-3 w-3" /> : <Users className="h-3 w-3" />}
-                                  {ind.subjek === 'guru' ? 'Guru' : 'Murid'}
-                                </span>
-                                <span className="inline-flex items-center gap-1 text-[9px] text-text-secondary font-medium px-1.5 py-0.5 rounded bg-surface border border-border/50">
-                                  {ind.konteks === 'kelas' ? <Building2 className="h-3 w-3" /> : <Trees className="h-3 w-3" />}
-                                  {ind.konteks === 'kelas' ? 'Kelas' : 'Lingkungan'}
-                                </span>
-                              </div>
-                              <p className="text-xs font-semibold text-text-primary leading-relaxed pr-16">{ind.teks}</p>
-                              {ind.catatan && (
-                                <p className="text-[10px] text-text-secondary italic mt-1.5 leading-relaxed flex items-start gap-1">
-                                  <AlertCircle className="h-3 w-3 text-text-secondary/70 shrink-0 mt-0.5" /> {ind.catatan}
-                                </p>
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-border/50">
-                              {skorOptions.map(opt => (
-                                <div key={opt.value} className="flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-xl border border-border/60 bg-surface/50 text-[10px] font-semibold text-text-secondary">
-                                  <div className="w-1.5 h-1.5 rounded-full mb-0.5" style={{ backgroundColor: opt.color }} />
-                                  <span className="leading-tight text-center">{opt.label}</span>
+                          <div key={ind.id} className="rounded-xl border border-border bg-bg/30 p-3.5 space-y-2 transition-all hover:border-primary/40 hover:bg-surface hover:shadow-xs relative group">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1">
+                                <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                                  <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${ind.subjek === 'guru' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
+                                    {ind.subjek === 'guru' ? <GraduationCap className="h-3 w-3" /> : <Users className="h-3 w-3" />}
+                                    {ind.subjek === 'guru' ? 'Guru' : 'Murid'}
+                                  </span>
+                                  <span className="inline-flex items-center gap-1 text-[9px] text-text-secondary font-medium px-1.5 py-0.5 rounded bg-surface border border-border/50">
+                                    {ind.konteks === 'kelas' ? <Building2 className="h-3 w-3" /> : <Trees className="h-3 w-3" />}
+                                    {ind.konteks === 'kelas' ? 'Kelas' : 'Lingkungan'}
+                                  </span>
                                 </div>
-                              ))}
+                                <p className="text-xs font-semibold text-text-primary leading-relaxed">{ind.teks}</p>
+                                {ind.catatan && (
+                                  <p className="text-[10px] text-text-secondary italic mt-1 leading-relaxed flex items-start gap-1">
+                                    <AlertCircle className="h-3 w-3 text-text-secondary/70 shrink-0 mt-0.5" /> {ind.catatan}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  onClick={() => handleOpenEdit(ind)}
+                                  className="p-1.5 rounded-lg bg-surface border border-border text-primary hover:bg-primary/10 transition-smooth cursor-pointer"
+                                  title="Edit Indikator"
+                                >
+                                  <Edit3 className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(ind.id)}
+                                  className="p-1.5 rounded-lg bg-surface border border-border text-status-belum hover:bg-status-belum/10 transition-smooth cursor-pointer"
+                                  title="Hapus Indikator"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -326,6 +295,36 @@ export default function KelolaFormSEL() {
           </div>
         ))}
       </div>
+
+      {/* Modal Live Preview User View */}
+      {isPreviewOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-4xl max-h-[92vh] overflow-y-auto animate-scale-in">
+            <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-surface z-20">
+              <div className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-primary" />
+                <div>
+                  <h3 className="font-bold text-text-primary text-sm font-display">Live Interactive Preview: Form Observasi SEL</h3>
+                  <p className="text-[10px] text-text-secondary">Simulasi interaktif langsung sesuai tampilan User Sekolah saat mengisi form</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsPreviewOpen(false)}
+                className="p-1.5 rounded-lg text-text-secondary hover:bg-border/40 transition-smooth cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-6 bg-bg/50">
+              <ObservasiFormWizard onSubmitDone={() => {
+                showToast('Simulasi Pengiriman Berhasil!');
+                setIsPreviewOpen(false);
+              }} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Add/Edit Indicator */}
       {isModalOpen && (
@@ -426,57 +425,6 @@ export default function KelolaFormSEL() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Edit Skala Respon */}
-      {isSkorModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-md overflow-hidden animate-scale-in">
-            <div className="flex items-center justify-between p-5 border-b border-border bg-surface">
-              <div className="flex items-center gap-2">
-                <Sliders className="h-5 w-5 text-primary" />
-                <h3 className="font-bold text-text-primary text-base font-display">Kustomisasi Label Skala Respon</h3>
-              </div>
-              <button
-                onClick={() => setIsSkorModalOpen(false)}
-                className="p-1.5 rounded-lg text-text-secondary hover:bg-border/40 transition-smooth cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4 text-xs">
-              <p className="text-text-secondary leading-relaxed">
-                Ubah label teks untuk masing-masing opsi rating skor (1–4) yang akan muncul pada form pengisian user:
-              </p>
-              <div className="space-y-3">
-                {skorOptions.map(opt => (
-                  <div key={opt.value} className="space-y-1">
-                    <label className="font-bold uppercase text-[10px] flex items-center gap-1.5" style={{ color: opt.color }}>
-                      <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: opt.color }} />
-                      Skor {opt.value} Label
-                    </label>
-                    <input
-                      type="text"
-                      value={opt.label}
-                      onChange={e => handleSaveSkorOption(opt.value, e.target.value)}
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-text-primary font-semibold focus:border-primary focus:outline-none"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="border-t border-border pt-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setIsSkorModalOpen(false)}
-                  className="px-5 py-2 rounded-xl bg-primary text-white font-bold shadow-sm hover:bg-primary-dark transition-smooth cursor-pointer"
-                >
-                  Selesai
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       )}
