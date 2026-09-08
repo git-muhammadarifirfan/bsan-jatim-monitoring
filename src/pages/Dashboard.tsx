@@ -132,7 +132,7 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
 
   // ─── SCHOOL USER DASHBOARD ───
   if (userRole === 'school') {
-    const mockProgresses = [100, 100, 100, 45, 0];
+    const mockProgresses = [100, 75, 40];
     return (
       <div className="space-y-6">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-accent to-primary-dark p-8 text-white shadow-lg">
@@ -144,12 +144,12 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
             </p>
             <h2 className="text-3xl font-bold font-display mb-3">Halo, SD Negeri Candi 1 👋</h2>
             <p className="text-white/80 text-sm leading-relaxed mb-6">
-              Anda telah melengkapi <strong>3 dari 5</strong> Modul Evaluasi Mutu BSAN tahun 2026. Selesaikan 2 modul tersisa untuk mendapatkan sertifikat dan rapor mutu sekolah.
+               Anda telah melengkapi <strong>2 dari 3</strong> Modul BSAN (Budaya Sekolah Aman dan Nyaman) tahun 2026. Selesaikan modul tersisa untuk mendapatkan sertifikat dan rapor mutu sekolah.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/kuisioner" className="inline-flex items-center space-x-2 bg-white text-primary rounded-xl px-5 py-2.5 text-xs font-bold hover:bg-white/90 hover:scale-105 transition-all shadow-md">
                 <BookOpen className="h-4 w-4" />
-                <span>Lanjutkan Survei (Modul 4)</span>
+                 <span>Lanjutkan Survei</span>
               </Link>
               <button 
                 onClick={() => alert('Rapor sementara berhasil diunduh. Silakan cek folder Download Anda.')}
@@ -168,7 +168,7 @@ export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRol
               <BookOpen className="h-5 w-5 text-primary" />
               <h3 className="text-base font-bold text-text-primary font-display">Progres Pengisian Modul</h3>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+             <div className="grid grid-cols-3 gap-4">
               {modulProgress.map((mod, idx) => {
                 const prog = mockProgresses[idx];
                 const r = 34;

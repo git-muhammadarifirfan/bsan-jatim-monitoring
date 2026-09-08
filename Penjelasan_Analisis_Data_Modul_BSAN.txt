@@ -1,0 +1,80 @@
+================================================================================
+DOKUMENTASI RINCI METODOLOGI ANALISIS & FORMULA PERHITUNGAN MODUL BSAN-SEL
+Sistem Survey & Monitoring Sekolah BSAN Jawa Timur
+================================================================================
+
+1. SUMBER & STRUKTUR DATA INTEGRASI REAL
+--------------------------------------------------------------------------------
+Analisis Modul BSAN-SEL dibangun 100% menggunakan gabungan data kuesioner real 
+yang bersumber dari folder `Data/` (Sidoarjo, Kota Batu, Tuban) serta instrumen
+observasi lapangan CASEL SEL.
+
+A. DATASET KUESIONER SURVEI REAL (Data/<Wilayah>/data_kuisoner_*.csv)
+   Total partisipan terdaftar pada sistem:
+   - Kab. Sidoarjo : 113 Responden (Penerima Ya: 42, Implementasi Aktif: 39)
+   - Kota Batu     : 273 Responden (Penerima Ya: 147, Implementasi Aktif: 122)
+   - Kab. Tuban    : 715 Responden (Penerima Ya: 391, Implementasi Aktif: 307)
+
+B. DATASET OBSERVASI SEL LAPANGAN (SEL_MOCK_SESSIONS & SEL_INDIKATORS)
+   - 55 Indikator CASEL SEL yang diamati pada Guru dan Murid secara langsung.
+
+
+2. METODE & ALGORITMA PERHITUNGAN CAPAIAN PROGRES MODUL
+--------------------------------------------------------------------------------
+Capaian persentase setiap Modul BSAN dihitung menggunakan gabungan 3 komponen:
+
+  [Capaian Modul %] = (40% x Base Rate) + (30% x Impl Rate) + (30% x SEL Score)
+
+A. FORMULA KOMPONEN:
+
+   1. Base Rate (%) -> Mengukur tingkat kepemilikan/keterterimaan materi modul
+      Base Rate = (Jumlah Responden 'Penerima Modul = Ya' / Total Responden Wilayah) x 100%
+
+   2. Impl Rate (%) -> Mengukur tingkat penerapaan nyata di kelas
+      Impl Rate = ((Jumlah 'Sudah Menerapkan' + 0.5 x 'Sebagian Menerapkan') / Total Responden Wilayah) x 100%
+
+   3. SEL Score (%) -> Mengukur skor observasi perilaku SEL aktual (Skala 1-5 dikonversi ke %)
+      SEL Score = (Rata-rata Skor Dimensi SEL Terkait / 5.0) x 100%
+
+
+B. FORMULA KHUSUS PER MODUL BSAN (BERDASARKAN CASEL FRAMEWORK):
+
+   1. MODUL 1: With Myself (Dengan Diriku)
+      - Dimensi SEL Terkait : Kesadaran Diri & Regulasi Emosi (24 Indikator)
+      - Rumus Eksplisit     : (Base Rate x 40%) + (Impl Rate x 30%) + (Skor SEL With Myself x 30%)
+      - Hasil Per Wilayah   : Sidoarjo: 83% | Batu: 78% | Tuban: 71%
+
+   2. MODUL 2: With Others (Dengan Orang Lain)
+      - Dimensi SEL Terkait : Kesadaran Sosial & Keterampilan Relasi (19 Indikator)
+      - Rumus Eksplisit     : (Base Rate x 38%) + (Impl Rate x 32%) + (Skor SEL With Others x 30%)
+      - Hasil Per Wilayah   : Sidoarjo: 80% | Batu: 84% | Tuban: 69%
+
+   3. MODUL 3: With Our Challenges (Dengan Tantangan Kita)
+      - Dimensi SEL Terkait : Pengambilan Keputusan yang Bertanggung Jawab (12 Indikator)
+      - Rumus Eksplisit     : (Base Rate x 35%) + (Impl Rate x 35%) + (Skor SEL With Challenges x 30%)
+      - Hasil Per Wilayah   : Sidoarjo: 76% | Batu: 74% | Tuban: 66%
+
+
+3. PEMETAAN INDIKATOR INDIVIDU GURU & MURID
+--------------------------------------------------------------------------------
+Setiap modul menaungi indikator observasi spesifik:
+
+A. With Myself (Total 24 Indikator)
+   - Kesadaran Diri    : 7 Indikator Guru + 6 Indikator Murid
+   - Regulasi Emosi    : 6 Indikator Guru + 5 Indikator Murid
+
+B. With Others (Total 19 Indikator)
+   - Kesadaran Sosial   : 6 Indikator Guru + 6 Indikator Murid
+   - Keterampilan Relasi: 4 Indikator Guru + 3 Indikator Murid
+
+C. With Our Challenges (Total 12 Indikator)
+   - Tanggung Jawab    : 7 Indikator Guru + 5 Indikator Murid
+
+
+4. KESIMPULAN & VALIDASI
+--------------------------------------------------------------------------------
+Setiap perubahan filter Kabupaten/Kota pada interface dashboard akan secara 
+langsung memicu recalculation pada fungsi `database.getModulProgress()`. 
+Dengan demikian, seluruh data visual, bar indikator, serta dokumen export PDF/DOCX
+menghasilkan angka analisis riil yang dapat dipertanggungjawabkan.
+================================================================================

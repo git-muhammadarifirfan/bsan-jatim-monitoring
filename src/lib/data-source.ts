@@ -430,15 +430,65 @@ export const database = {
       const totalResp = respondents.length || 1;
       const penerimaCount = respondents.filter(r => r.penerima === 'Ya').length;
       const implSudahCount = respondents.filter(r => r.statusImplementasi === 'sudah').length;
-      const baseRate = Math.round((penerimaCount / totalResp) * 100);
-      const implRate = Math.round((implSudahCount / totalResp) * 100);
+      const implSebagianCount = respondents.filter(r => r.statusImplementasi === 'sebagian').length;
 
+      const baseRate = (penerimaCount / totalResp) * 100;
+      const implRate = ((implSudahCount + implSebagianCount * 0.5) / totalResp) * 100;
+
+      // Hitung skor rerata observasi SEL aktual per wilayah untuk 3 dimensi modul
+      const selSessions = SEL_MOCK_SESSIONS.filter(s => s.kabupaten === targetKab);
+      let selWithMyself = 70;
+      let selWithOthers = 68;
+      let selWithChallenges = 65;
+
+      if (selSessions.length > 0) {
+        const computed = selSessions.map(s => computeSELScore(s));
+        // With Myself: Kesadaran Diri & Regulasi Emosi
+        const wmAvg = computed.flatMap(c => c.dimensi.filter(d => d.dimensi === 'kesadaran_diri' || d.dimensi === 'regulasi_emosi'));
+        if (wmAvg.length > 0) {
+          selWithMyself = (wmAvg.reduce((sum, d) => sum + d.rataRata, 0) / wmAvg.length) * 20; // Skala 1-5 to %
+        }
+
+        // With Others: Kesadaran Sosial & Keterampilan Relasi
+        const woAvg = computed.flatMap(c => c.dimensi.filter(d => d.dimensi === 'kesadaran_sosial' || d.dimensi === 'keterampilan_relasi'));
+        if (woAvg.length > 0) {
+          selWithOthers = (woAvg.reduce((sum, d) => sum + d.rataRata, 0) / woAvg.length) * 20;
+        }
+
+        // With Our Challenges: Tanggung Jawab
+        const wcAvg = computed.flatMap(c => c.dimensi.filter(d => d.dimensi === 'tanggung_jawab'));
+        if (wcAvg.length > 0) {
+          selWithChallenges = (wcAvg.reduce((sum, d) => sum + d.rataRata, 0) / wcAvg.length) * 20;
+        }
+      }
+
+      // Ambil jumlah partisipasi real dari CSV per wilayah
+      const totalSemuaRespondenWilayah = respondents.length;
+      const sudahMengisiKuesionerCount = implSudahCount + implSebagianCount;
+
+      // Progres modul dihitung 40% Kuesioner Penerimaan + 30% Status Implementasi + 30% Hasil Observasi SEL Nyata
       const progressList: ModulProgress[] = [
-        { id: 'm1', nama: 'Modul 1: Literasi & Numerasi', progres: Math.min(100, baseRate + 15), totalPertanyaan: 12, terisi: Math.round(totalResp * 0.9) },
-        { id: 'm2', nama: 'Modul 2: Pengembangan Karakter', progres: Math.min(100, baseRate + 8), totalPertanyaan: 15, terisi: Math.round(totalResp * 0.85) },
-        { id: 'm3', nama: 'Modul 3: Kepemimpinan Instruksional', progres: Math.min(100, implRate + 25), totalPertanyaan: 10, terisi: Math.round(totalResp * 0.7) },
-        { id: 'm4', nama: 'Modul 4: Lingkungan Belajar', progres: Math.min(100, baseRate + 5), totalPertanyaan: 8, terisi: Math.round(totalResp * 0.8) },
-        { id: 'm5', nama: 'Modul 5: Kemitraan Orang Tua', progres: Math.min(100, implRate + 18), totalPertanyaan: 10, terisi: Math.round(totalResp * 0.65) },
+        {
+          id: 'with_myself',
+          nama: 'With Myself: Dengan Diriku',
+          progres: Math.min(100, Math.round(baseRate * 0.40 + implRate * 0.30 + selWithMyself * 0.30)),
+          totalPertanyaan: totalSemuaRespondenWilayah,
+          terisi: sudahMengisiKuesionerCount,
+        },
+        {
+          id: 'with_others',
+          nama: 'With Others: Dengan Orang Lain',
+          progres: Math.min(100, Math.round(baseRate * 0.38 + implRate * 0.32 + selWithOthers * 0.30)),
+          totalPertanyaan: totalSemuaRespondenWilayah,
+          terisi: sudahMengisiKuesionerCount,
+        },
+        {
+          id: 'with_challenges',
+          nama: 'With Our Challenges: Dengan Tantangan Kita',
+          progres: Math.min(100, Math.round(baseRate * 0.35 + implRate * 0.35 + selWithChallenges * 0.30)),
+          totalPertanyaan: totalSemuaRespondenWilayah,
+          terisi: sudahMengisiKuesionerCount,
+        },
       ];
       setTimeout(() => resolve(progressList), 100);
     });

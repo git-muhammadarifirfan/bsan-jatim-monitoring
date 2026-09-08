@@ -24,6 +24,227 @@ export const SEL_SKOR_LABEL: Record<SELSkor, { label: string; emoji: string; col
   4: { label: 'Konsisten Terlihat', emoji: '🌟', color: '#4A57C4' },
 };
 
+// ────────────────────────────────────────────────────────────
+//  BSAN Module Framework (CASEL Alignment)
+//  3 Modul utama sesuai framework BSAN-SEL
+// ────────────────────────────────────────────────────────────
+
+export type BSANModul = 'with_myself' | 'with_others' | 'with_challenges';
+
+export const BSAN_MODUL_ORDER: BSANModul[] = ['with_myself', 'with_others', 'with_challenges'];
+
+export const BSAN_MODUL_LABEL: Record<BSANModul, string> = {
+  with_myself:     'With Myself',
+  with_others:     'With Others',
+  with_challenges: 'With Our Challenges',
+};
+
+export const BSAN_MODUL_SUBTITLE: Record<BSANModul, string> = {
+  with_myself:     'Understanding and managing emotions',
+  with_others:     'Forming and sustaining positive relationships',
+  with_challenges: 'Making the most out of life',
+};
+
+export const BSAN_MODUL_LABEL_ID: Record<BSANModul, string> = {
+  with_myself:     'Dengan Diriku',
+  with_others:     'Dengan Orang Lain',
+  with_challenges: 'Dengan Tantangan Kita',
+};
+
+export const BSAN_MODUL_SUBTITLE_ID: Record<BSANModul, string> = {
+  with_myself:     'Memahami dan mengelola emosi',
+  with_others:     'Membangun dan menjaga hubungan positif',
+  with_challenges: 'Menjadikan hidup lebih bermakna',
+};
+
+export const BSAN_MODUL_COLOR: Record<BSANModul, string> = {
+  with_myself:     '#4A57C4', // indigo/blue
+  with_others:     '#10B981', // emerald/green
+  with_challenges: '#F59E0B', // amber/yellow
+};
+
+export const BSAN_MODUL_ICON: Record<BSANModul, string> = {
+  with_myself:     'brain',
+  with_others:     'users',
+  with_challenges: 'target',
+};
+
+/** General Skills per Modul (sesuai framework CASEL) */
+export interface BSANGeneralSkill {
+  id: string;
+  modul: BSANModul;
+  name: string;
+  nameId: string;
+  description: string;
+  descriptionId: string;
+  specificSkills: BSANSpecificSkill[];
+}
+
+export interface BSANSpecificSkill {
+  name: string;
+  nameId: string;
+  description: string;
+  descriptionId: string;
+}
+
+export const BSAN_GENERAL_SKILLS: BSANGeneralSkill[] = [
+  // ── WITH MYSELF ──
+  {
+    id: 'self_awareness',
+    modul: 'with_myself',
+    name: 'Self-Awareness',
+    nameId: 'Kesadaran Diri',
+    description: 'Knowing, understanding and trusting ourselves',
+    descriptionId: 'Mengenal, memahami, dan mempercayai diri sendiri',
+    specificSkills: [
+      { name: 'Self-concept', nameId: 'Konsep Diri', description: 'What we think about ourselves', descriptionId: 'Apa yang kita pikirkan tentang diri sendiri' },
+      { name: 'Self-efficacy', nameId: 'Efikasi Diri', description: 'Trusting our ability to succeed in specific situations', descriptionId: 'Mempercayai kemampuan kita untuk berhasil di situasi tertentu' },
+      { name: 'Emotional awareness', nameId: 'Kesadaran Emosional', description: 'Knowing what we are feeling and why', descriptionId: 'Mengetahui apa yang kita rasakan dan mengapa' },
+    ],
+  },
+  {
+    id: 'self_regulation',
+    modul: 'with_myself',
+    name: 'Self-Regulation',
+    nameId: 'Regulasi Diri',
+    description: 'Governing our impulses and emotions',
+    descriptionId: 'Mengelola dorongan dan emosi kita',
+    specificSkills: [
+      { name: 'Emotional regulation', nameId: 'Regulasi Emosi', description: 'Managing our emotions in harmony with our goals', descriptionId: 'Mengelola emosi selaras dengan tujuan kita' },
+      { name: 'Delayed gratification', nameId: 'Penundaan Kepuasan', description: 'Postponing an immediate reward for better outcomes later', descriptionId: 'Menunda imbalan segera untuk hasil yang lebih baik nanti' },
+      { name: 'Frustration tolerance', nameId: 'Toleransi Frustrasi', description: 'Facing difficulties without feeling overwhelmed by anger or disappointment', descriptionId: 'Menghadapi kesulitan tanpa merasa kewalahan oleh kemarahan atau kekecewaan' },
+    ],
+  },
+
+  // ── WITH OTHERS ──
+  {
+    id: 'social_awareness',
+    modul: 'with_others',
+    name: 'Social Awareness',
+    nameId: 'Kesadaran Sosial',
+    description: "Understanding other people's feelings, needs, and concerns",
+    descriptionId: 'Memahami perasaan, kebutuhan, dan kekhawatiran orang lain',
+    specificSkills: [
+      { name: 'Perspective taking', nameId: 'Mengambil Perspektif', description: 'Understanding a given situation from multiple points of view', descriptionId: 'Memahami situasi dari berbagai sudut pandang' },
+      { name: 'Empathy', nameId: 'Empati', description: "Putting ourselves in another's place, walking in another's shoes", descriptionId: 'Menempatkan diri di posisi orang lain' },
+      { name: 'Prosocial behavior', nameId: 'Perilaku Prososial', description: 'Voluntary actions intended to help or benefit others', descriptionId: 'Tindakan sukarela untuk membantu atau menguntungkan orang lain' },
+    ],
+  },
+  {
+    id: 'positive_communication',
+    modul: 'with_others',
+    name: 'Positive Communication',
+    nameId: 'Komunikasi Positif',
+    description: 'Interacting with kindness and respect for ourselves and others',
+    descriptionId: 'Berinteraksi dengan kebaikan dan rasa hormat terhadap diri sendiri dan orang lain',
+    specificSkills: [
+      { name: 'Active listening', nameId: 'Mendengar Aktif', description: 'Paying undivided attention to another person with genuine interest and respect', descriptionId: 'Memberikan perhatian penuh kepada orang lain dengan ketertarikan dan rasa hormat yang tulus' },
+      { name: 'Assertiveness', nameId: 'Asertivitas', description: 'Advocating for ourselves with confidence, honesty and respect', descriptionId: 'Menyuarakan diri dengan percaya diri, jujur, dan hormat' },
+      { name: 'Conflict management', nameId: 'Manajemen Konflik', description: 'Dealing with conflict in a way that enhances learning and group outcomes', descriptionId: 'Menangani konflik dengan cara yang meningkatkan pembelajaran dan hasil kelompok' },
+    ],
+  },
+
+  // ── WITH OUR CHALLENGES ──
+  {
+    id: 'determination',
+    modul: 'with_challenges',
+    name: 'Determination',
+    nameId: 'Determinasi',
+    description: 'Pursuing goals with resolve and purpose',
+    descriptionId: 'Mengejar tujuan dengan tekad dan tujuan yang jelas',
+    specificSkills: [
+      { name: 'Achievement motivation', nameId: 'Motivasi Berprestasi', description: 'Driving ourselves to succeed', descriptionId: 'Mendorong diri sendiri untuk berhasil' },
+      { name: 'Perseverance', nameId: 'Ketekunan', description: 'Keeping up the effort to achieve our goals despite difficulty, delays and failure', descriptionId: 'Terus berusaha mencapai tujuan meski ada kesulitan, keterlambatan, dan kegagalan' },
+      { name: 'Stress management', nameId: 'Manajemen Stres', description: "Taking charge so the pressures and tensions of our lives don't break us", descriptionId: 'Mengelola tekanan dan ketegangan hidup agar tidak menghancurkan kita' },
+    ],
+  },
+  {
+    id: 'responsible_decision_making',
+    modul: 'with_challenges',
+    name: 'Responsible Decision-Making',
+    nameId: 'Pengambilan Keputusan Bertanggung Jawab',
+    description: 'Making constructive and respectful choices',
+    descriptionId: 'Membuat pilihan yang konstruktif dan penuh rasa hormat',
+    specificSkills: [
+      { name: 'Creative thinking', nameId: 'Berpikir Kreatif', description: 'Generating new ideas, solutions or courses of action in the face of challenge', descriptionId: 'Menghasilkan ide, solusi, atau tindakan baru dalam menghadapi tantangan' },
+      { name: 'Critical thinking', nameId: 'Berpikir Kritis', description: 'Questioning the assumptions underlying our habitual ways of thinking and acting', descriptionId: 'Mempertanyakan asumsi yang mendasari cara berpikir dan bertindak kita' },
+      { name: 'Responsibility', nameId: 'Tanggung Jawab', description: 'Fulfilling our commitments and being accountable for our words and actions', descriptionId: 'Memenuhi komitmen dan bertanggung jawab atas kata-kata dan tindakan kita' },
+    ],
+  },
+];
+
+/** Mapping dimensi SEL observasi (5) → Modul BSAN (3) */
+export const SEL_DIMENSI_TO_MODUL: Record<SELDimensi, BSANModul> = {
+  kesadaran_diri:      'with_myself',
+  regulasi_emosi:      'with_myself',
+  kesadaran_sosial:    'with_others',
+  keterampilan_relasi: 'with_others',
+  tanggung_jawab:      'with_challenges',
+};
+
+/** Mapping dimensi SEL observasi → General Skill terdekat */
+export const SEL_DIMENSI_TO_GENERAL_SKILL: Record<SELDimensi, string> = {
+  kesadaran_diri:      'self_awareness',
+  regulasi_emosi:      'self_regulation',
+  kesadaran_sosial:    'social_awareness',
+  keterampilan_relasi: 'positive_communication',
+  tanggung_jawab:      'responsible_decision_making',
+};
+
+/** Mapping Alur/Tema survei kuesioner → Modul BSAN */
+export const SURVEY_TEMA_TO_MODUL = {
+  kelasAwal: {
+    with_myself: [
+      'Alur 1: Tema 1: Tubuhku Istimewa',
+      'Alur 1: Tema 2: Aku Jaga Diri',
+      'Alur 1: Tema 3: Perasaanku, Tanggungjawabku',
+      'Alur 1: Tema 4: Aku Bisa, Aku Hebat',
+      'Alur 1: Tema 5: Aku Gemar Membaca',
+    ],
+    with_others: [
+      'Alur 2: Tema 6: Aku, Kamu, Kita Unik',
+      'Alur 2: Tema 7: Tubuhku Bicara, Emosi Bisa Berubah',
+    ],
+    with_challenges: [
+      'Alur 3: Tema 8: Surat Untuk yang tersayang',
+      'Alur 3: Tema 9: Jaga Layar, Jaga Diri',
+      'Alur 3: Tema 10: Aku Mau Membantu',
+    ],
+  },
+  kelasTinggi: {
+    with_myself: [
+      'Alur 1: Tema 1: Mengenali Perasaan Diri',
+      'Alur 1: Tema 2: Mengelola Perasaan Diri',
+      'Alur 1: Tema 3: Peta Tubuh Saya',
+      'Alur 1: Tema 4: Afirmasi Positif',
+    ],
+    with_others: [
+      'Alur 2: Tema 5: Lingkaran Persahabatan',
+      'Alur 2: Tema 6: Berbagi Persahabatan',
+      'Alur 2: Tema 7: Tanggung Jawab Diri',
+      'Alur 2: Tema 8: Ayo Bermain Bersama',
+      'Alur 2: Tema 9: Aku dan Kamu Istimewa',
+    ],
+    with_challenges: [
+      'Alur 3: Tema 10: Gembira bersama Sahabat',
+      'Alur 3: Tema 11: Kampanye Anak Indonesia Hebat',
+      'Alur 3: Tema 12: Refleksi dan Tindak Lanjut',
+    ],
+  },
+} as const;
+
+/** Helper: ambil General Skills untuk modul tertentu */
+export function getGeneralSkillsByModul(modul: BSANModul): BSANGeneralSkill[] {
+  return BSAN_GENERAL_SKILLS.filter(gs => gs.modul === modul);
+}
+
+/** Helper: ambil dimensi SEL yang masuk ke modul tertentu */
+export function getDimensiByModul(modul: BSANModul): SELDimensi[] {
+  return (Object.entries(SEL_DIMENSI_TO_MODUL) as [SELDimensi, BSANModul][])
+    .filter(([, m]) => m === modul)
+    .map(([d]) => d);
+}
+
 export interface SELIndikator {
   id: string;
   dimensi: SELDimensi;
