@@ -747,13 +747,19 @@ export const database = {
         if (r.penyelenggara && r.penyelenggara !== '-') {
           const items = r.penyelenggara.split(/[,;]/);
           items.forEach(it => {
-            const clean = it.trim();
+            let clean = it.trim();
+            if (clean.length > 25) {
+              if (clean.toLowerCase().includes('inovasi')) clean = 'INOVASI / Dinas';
+              else if (clean.toLowerCase().includes('kkg') || clean.toLowerCase().includes('kkks')) clean = 'Diseminasi KKG / KKKS';
+              else if (clean.toLowerCase().includes('internal') || clean.toLowerCase().includes('sekolah')) clean = 'Pelatihan Internal Sekolah';
+              else clean = clean.slice(0, 22) + '...';
+            }
             if (clean) penMap[clean] = (penMap[clean] || 0) + 1;
           });
         }
       });
 
-      let penyelenggaraPelatihan = Object.keys(penMap).map(k => ({ nama: k, jumlah: penMap[k] })).sort((a, b) => b.jumlah - a.jumlah);
+      let penyelenggaraPelatihan = Object.keys(penMap).map(k => ({ nama: k, jumlah: penMap[k] })).sort((a, b) => b.jumlah - a.jumlah).slice(0, 8);
       if (penyelenggaraPelatihan.length === 0) {
         penyelenggaraPelatihan = [
           { nama: 'INOVASI - Dinas Pendidikan', jumlah: Math.round(totalResponden * 0.45) },
