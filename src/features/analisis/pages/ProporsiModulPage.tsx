@@ -657,20 +657,32 @@ export default function ProporsiModul() {
                   </p>
                 </div>
 
-                <div className="h-[340px] w-full pt-2">
+                <div className="h-[420px] w-full pt-2">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={data.kondisiFasilitas}
                       layout="vertical"
-                      margin={{ top: 5, right: 20, left: 40, bottom: 5 }}
+                      margin={{ top: 10, right: 20, left: 10, bottom: 25 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
                       <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
-                      <YAxis dataKey="kecamatan" type="category" tick={{ fontSize: 11 }} width={90} tickFormatter={(val) => typeof val === 'string' && val.length > 15 ? val.slice(0, 14) + '...' : val} />
+                      <YAxis
+                        dataKey="kecamatan"
+                        type="category"
+                        tick={{ fontSize: 11, fill: '#475569' }}
+                        width={130}
+                        tickFormatter={(val) => {
+                          if (typeof val === 'string' && val.length > 18) {
+                            return val.slice(0, 16) + '...';
+                          }
+                          return val;
+                        }}
+                      />
                       <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="baik" name="Kondisi Baik (%)" fill={COLOR_EMERALD} stackId="a" isAnimationActive={true} animationDuration={800} />
-                      <Bar dataKey="cukup" name="Kondisi Cukup (%)" fill={COLOR_AMBER} stackId="a" isAnimationActive={true} animationDuration={800} />
-                      <Bar dataKey="rusak" name="Kondisi Rusak (%)" fill={COLOR_ROSE} stackId="a" radius={[0, 6, 6, 0]} isAnimationActive={true} animationDuration={800} />
+                      <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: 11, paddingBottom: 10 }} />
+                      <Bar dataKey="baik" name="Kondisi Baik (%)" fill={COLOR_EMERALD} stackId="a" barSize={16} isAnimationActive={true} animationDuration={800} />
+                      <Bar dataKey="cukup" name="Kondisi Cukup (%)" fill={COLOR_AMBER} stackId="a" barSize={16} isAnimationActive={true} animationDuration={800} />
+                      <Bar dataKey="rusak" name="Kondisi Rusak (%)" fill={COLOR_ROSE} stackId="a" radius={[0, 6, 6, 0]} barSize={16} isAnimationActive={true} animationDuration={800} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -687,18 +699,29 @@ export default function ProporsiModul() {
                   </p>
                 </div>
 
-                <div className="h-[340px] w-full pt-2">
+                <div className="h-[420px] w-full pt-2">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={data.kelayakanRuangKelas}
                       layout="vertical"
-                      margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                      margin={{ top: 10, right: 30, left: 10, bottom: 25 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
                       <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
-                      <YAxis dataKey="kecamatan" type="category" tick={{ fontSize: 11 }} width={90} tickFormatter={(val) => typeof val === 'string' && val.length > 15 ? val.slice(0, 14) + '...' : val} />
+                      <YAxis
+                        dataKey="kecamatan"
+                        type="category"
+                        tick={{ fontSize: 11, fill: '#475569' }}
+                        width={130}
+                        tickFormatter={(val) => {
+                          if (typeof val === 'string' && val.length > 18) {
+                            return val.slice(0, 16) + '...';
+                          }
+                          return val;
+                        }}
+                      />
                       <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="persentase" name="Ruang Kelas Layak (%)" fill={COLOR_INDIGO} radius={[0, 6, 6, 0]} barSize={14} isAnimationActive={true} animationDuration={800} />
+                      <Bar dataKey="persentase" name="Ruang Kelas Layak (%)" fill={COLOR_INDIGO} radius={[0, 6, 6, 0]} barSize={18} isAnimationActive={true} animationDuration={800} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
