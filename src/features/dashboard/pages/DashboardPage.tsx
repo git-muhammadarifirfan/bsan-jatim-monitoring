@@ -66,7 +66,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ activeKecamatan, setActiveKecamatan, userRole }: DashboardProps) {
-  const [selectedKab, setSelectedKab] = useState<string>('Kab. Sidoarjo');
+  const [selectedKab, setSelectedKab] = useState<string>('');
   const [remindedSchools, setRemindedSchools] = useState<Record<string, boolean>>({});
   const [loadingReminder, setLoadingReminder] = useState<string | null>(null);
   
