@@ -313,6 +313,7 @@ export default function SchoolMap() {
 
             {/* Smart Marker Cluster Group */}
             <MarkerClusterGroup
+              key={`cluster-${filteredValidSchools.length}-${selectedKabupaten}-${selectedStatus}`}
               chunkedLoading
               iconCreateFunction={createClusterCustomIcon}
               maxClusterRadius={50}
