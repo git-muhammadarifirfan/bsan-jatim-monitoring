@@ -384,9 +384,9 @@ export default function SchoolMap() {
               <div className="space-y-2.5 text-xs">
                 <div className="flex justify-between items-center">
                   <span className="text-text-tertiary">Status Kuesioner:</span>
-                  <span className={`font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-md ${
-                    selectedSchool.status === 'sudah' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400' :
-                    selectedSchool.status === 'sebagian' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400'
+                  <span className={`font-bold text-[10px] uppercase px-3 py-1 rounded-full text-white shadow-sm ${
+                    selectedSchool.status === 'sudah' ? 'bg-emerald-600' :
+                    selectedSchool.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
                   }`}>
                     {selectedSchool.status}
                   </span>
