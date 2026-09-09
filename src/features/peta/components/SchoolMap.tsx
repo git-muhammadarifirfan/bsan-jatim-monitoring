@@ -130,12 +130,22 @@ const createClusterCustomIcon = (cluster: any) => {
   });
 };
 
-// Helper Component untuk kontrol viewport
-function MapFlyToController({ center, zoom }: { center: [number, number]; zoom: number }) {
+// Helper Component untuk kontrol viewport & pemaksaan update initial render Leaflet
+function MapController({ center, zoom }: { center: [number, number]; zoom: number }) {
   const map = useMap();
+  
   React.useEffect(() => {
     map.flyTo(center, zoom, { duration: 1.0 });
   }, [center, zoom, map]);
+
+  React.useEffect(() => {
+    // Invalidate map size and trigger Leaflet event loop update on initial mount
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [map]);
+
   return null;
 }
 
@@ -302,8 +312,12 @@ export default function SchoolMap() {
             scrollWheelZoom={true}
             style={{ width: '100%', height: '560px', zIndex: 1 }}
             className="rounded-2xl"
+            whenReady={() => {
+              // Ensure Leaflet recalculates bounds as soon as container is mounted
+              window.dispatchEvent(new Event('resize'));
+            }}
           >
-            <MapFlyToController center={mapCenter} zoom={mapZoom} />
+            <MapController center={mapCenter} zoom={mapZoom} />
 
             {/* OpenStreetMap Basemap */}
             <TileLayer

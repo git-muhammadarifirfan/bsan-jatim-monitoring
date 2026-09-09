@@ -28,7 +28,7 @@ export default function KecamatanMapPage() {
 
         <div className="flex items-center gap-2 text-xs text-text-secondary bg-background px-3.5 py-2 rounded-xl border border-border">
           <SchoolIcon className="h-4 w-4 text-primary" />
-          <span className="font-semibold">Pemetaan Geografis SD Mitra</span>
+          <span className="font-semibold">Pemetaan Geografis Sekolah</span>
         </div>
       </div>
 
