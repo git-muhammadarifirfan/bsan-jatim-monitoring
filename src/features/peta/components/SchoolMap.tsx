@@ -1,26 +1,26 @@
 /**
  * @module features/peta/components
- * @description Komponen Peta Sekolah Jawa Timur (Leaflet Real Map + Tile CARTO Positron)
+ * @description Komponen Peta Sekolah Jawa Timur dengan Marker Clustering Modern & Clean basemap
  */
 
 import React, { useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { 
   School, 
   MapPin, 
   Search, 
   Filter, 
   AlertTriangle, 
-  CheckCircle2, 
-  Clock, 
-  XCircle, 
   Building2, 
   Users, 
-  Info,
   Maximize2,
-  Minimize2
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import schoolDataRaw from '../../../shared/data/sekolah-map-data.json';
 import CustomSelect from '../../../shared/components/CustomSelect';
@@ -44,25 +44,47 @@ export interface SchoolMapItem {
 
 const schoolData = schoolDataRaw as SchoolMapItem[];
 
-// SVG Custom Marker Generator
+// Sleek Clean Dot Marker Generator (Kecil, Flat Design, Tanpa clutter)
 const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
   let colorHex = '#e11d48'; // Merah (Belum)
   if (status === 'sudah') colorHex = '#10b981'; // Hijau (Sudah)
   if (status === 'sebagian') colorHex = '#f59e0b'; // Kuning (Sebagian)
 
   const svgHtml = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="28" height="36">
-      <path fill="${colorHex}" stroke="#ffffff" stroke-width="1.5" d="M12 0C5.37 0 0 5.37 0 12c0 9 12 20 12 20s12-11 12-20c0-6.63-5.37-12-12-12z"/>
-      <circle cx="12" cy="11" r="4.5" fill="#ffffff"/>
-    </svg>
+    <div style="
+      width: 14px;
+      height: 14px;
+      background-color: ${colorHex};
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+    "></div>
   `;
 
   return L.divIcon({
     html: svgHtml,
-    className: 'custom-leaflet-marker',
-    iconSize: [28, 36],
-    iconAnchor: [14, 36],
-    popupAnchor: [0, -32]
+    className: 'custom-clean-dot-marker',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -8]
+  });
+};
+
+// Custom Cluster Icon Generator (Buble Angka Jumlah Sekolah)
+const createClusterCustomIcon = (cluster: any) => {
+  const count = cluster.getChildCount();
+  let sizeClass = 'w-9 h-9 text-xs';
+  if (count > 50) sizeClass = 'w-11 h-11 text-sm font-extrabold';
+  if (count > 200) sizeClass = 'w-14 h-14 text-base font-extrabold';
+
+  return L.divIcon({
+    html: `<div class="flex items-center justify-center ${sizeClass} bg-indigo-600 text-white rounded-full font-bold shadow-lg border-2 border-white ring-4 ring-indigo-500/30 backdrop-blur-md hover:scale-110 transition-transform">
+      ${count}
+    </div>`,
+    className: 'custom-cluster-icon',
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
   });
 };
 
@@ -81,6 +103,7 @@ export default function SchoolMap() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedSchool, setSelectedSchool] = useState<SchoolMapItem | null>(null);
   const [showMissingModal, setShowMissingModal] = useState(false);
+  const [enableClustering, setEnableClustering] = useState(true);
   const [mapCenter, setMapCenter] = useState<[number, number]>([-7.4478, 112.7183]); // Default Sidoarjo
   const [mapZoom, setMapZoom] = useState<number>(11);
 
@@ -139,6 +162,48 @@ export default function SchoolMap() {
     setMapZoom(9);
   };
 
+  const renderMarkers = () => {
+    return filteredValidSchools.map((school) => (
+      <Marker
+        key={school.id}
+        position={[school.latitude, school.longitude]}
+        icon={createCustomMarkerIcon(school.status)}
+        eventHandlers={{
+          click: () => setSelectedSchool(school)
+        }}
+      >
+        <Popup className="custom-leaflet-popup">
+          <div className="p-1.5 space-y-1.5 text-slate-800 max-w-xs">
+            <div className="flex items-center justify-between gap-2 border-b pb-1">
+              <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
+              <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
+                school.status === 'sudah' ? 'bg-emerald-600' :
+                school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
+              }`}>
+                {school.status.toUpperCase()}
+              </span>
+            </div>
+
+            <h4 className="text-xs font-bold text-slate-900 leading-snug">
+              {school.nama}
+            </h4>
+
+            <div className="text-[11px] text-slate-600 space-y-0.5">
+              <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
+              <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
+            </div>
+
+            <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-slate-200">
+              <span>Guru: <strong>{school.totalGuru}</strong></span>
+              <span>Siswa: <strong>{school.totalSiswa}</strong></span>
+              <span>Responden: <strong className="text-blue-600">{school.respondenCount}</strong></span>
+            </div>
+          </div>
+        </Popup>
+      </Marker>
+    ));
+  };
+
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Top Header Card */}
@@ -148,18 +213,30 @@ export default function SchoolMap() {
             <span className="px-2.5 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
               GIS School Mapping
             </span>
-            <span className="text-xs text-text-tertiary">| Real Geolocation</span>
+            <span className="text-xs text-text-tertiary">| Smart Marker Clustering</span>
           </div>
           <h1 className="text-xl font-bold font-display text-text-primary">
             Peta Geografis Titik Lokasi Sekolah Jawa Timur
           </h1>
           <p className="text-xs text-text-secondary">
-            Visualisasi titik lokasi asli {statusStats.total.toLocaleString('id-ID')} SD mitra BSAN berdasarkan status pengisian kuesioner.
+            Visualisasi titik lokasi asli {statusStats.total.toLocaleString('id-ID')} SD mitra BSAN dengan sistem clustering titik sekolah rapi & responsif.
           </p>
         </div>
 
         {/* Action Quick Focus Buttons */}
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setEnableClustering(!enableClustering)}
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
+              enableClustering 
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/20' 
+                : 'bg-surface hover:bg-surface-hover text-text-secondary border-border'
+            }`}
+          >
+            <Layers className="h-3.5 w-3.5" />
+            <span>{enableClustering ? 'Clustering Aktif' : 'Semua Titik (Raw)'}</span>
+          </button>
+
           <button
             onClick={handleResetFocusSidoarjo}
             className="px-3.5 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold transition-all flex items-center gap-1.5"
@@ -173,7 +250,7 @@ export default function SchoolMap() {
             className="px-3.5 py-2 rounded-xl bg-surface-hover border border-border text-text-primary hover:bg-border text-xs font-bold transition-all flex items-center gap-1.5"
           >
             <Maximize2 className="h-3.5 w-3.5 text-text-tertiary" />
-            <span>Fokus Seluruh Jatim</span>
+            <span>Fokus Jatim</span>
           </button>
         </div>
       </div>
@@ -273,58 +350,32 @@ export default function SchoolMap() {
           >
             <MapFlyToController center={mapCenter} zoom={mapZoom} />
 
-            {/* OpenStreetMap Basemap (100% Free & No API Key Required) */}
+            {/* OpenStreetMap Basemap */}
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {/* Plot All Valid School Markers */}
-            {filteredValidSchools.map((school) => (
-              <Marker
-                key={school.id}
-                position={[school.latitude, school.longitude]}
-                icon={createCustomMarkerIcon(school.status)}
-                eventHandlers={{
-                  click: () => setSelectedSchool(school)
-                }}
+            {/* Smart Cluster Grouping */}
+            {enableClustering ? (
+              <MarkerClusterGroup
+                chunkedLoading
+                iconCreateFunction={createClusterCustomIcon}
+                maxClusterRadius={45}
+                spiderfyOnMaxZoom={true}
+                showCoverageOnHover={false}
               >
-                <Popup className="custom-leaflet-popup">
-                  <div className="p-1 space-y-1.5 text-slate-800">
-                    <div className="flex items-center justify-between gap-2 border-b pb-1">
-                      <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
-                        school.status === 'sudah' ? 'bg-emerald-600' :
-                        school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
-                      }`}>
-                        {school.status.toUpperCase()}
-                      </span>
-                    </div>
-
-                    <h4 className="text-xs font-bold text-slate-900 leading-snug">
-                      {school.nama}
-                    </h4>
-
-                    <div className="text-[11px] text-slate-600 space-y-0.5">
-                      <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
-                      <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
-                    </div>
-
-                    <div className="pt-1 flex items-center justify-between text-[10px] border-t border-slate-200">
-                      <span>Guru: <strong>{school.totalGuru}</strong></span>
-                      <span>Siswa: <strong>{school.totalSiswa}</strong></span>
-                      <span>Responden: <strong className="text-blue-600">{school.respondenCount}</strong></span>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
+                {renderMarkers()}
+              </MarkerClusterGroup>
+            ) : (
+              renderMarkers()
+            )}
           </MapContainer>
 
           {/* Bottom Bar Info Count */}
           <div className="p-2.5 bg-surface border-t border-border flex items-center justify-between text-xs text-text-tertiary">
             <span>Menampilkan <strong>{filteredValidSchools.length}</strong> titik sekolah di peta</span>
-            <span className="font-mono text-[11px]">CARTO Voyager Basemap</span>
+            <span className="font-mono text-[11px]">OpenStreetMap Standard Tile</span>
           </div>
         </div>
 
@@ -395,7 +446,7 @@ export default function SchoolMap() {
               <button
                 onClick={() => {
                   setMapCenter([selectedSchool.latitude, selectedSchool.longitude]);
-                  setMapZoom(15);
+                  setMapZoom(16);
                 }}
                 className="w-full py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-md hover:bg-primary-dark transition-all flex items-center justify-center gap-1.5"
               >
@@ -407,7 +458,7 @@ export default function SchoolMap() {
             <div className="p-6 rounded-2xl bg-surface border border-border text-center space-y-3 min-h-[220px] flex flex-col items-center justify-center">
               <Building2 className="h-8 w-8 text-text-tertiary opacity-40" />
               <p className="text-xs text-text-secondary max-w-xs">
-                Klik salah satu marker titik sekolah di peta untuk melihat rincian lokasi dan status kuesioner.
+                Klik salah satu marker titik sekolah di peta atau bulatan cluster untuk melihat rincian lokasi.
               </p>
             </div>
           )}
