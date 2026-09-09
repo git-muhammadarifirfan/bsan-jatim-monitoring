@@ -198,6 +198,14 @@ export default function SchoolMap() {
   const [showMissingModal, setShowMissingModal] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([-7.6000, 112.5000]); // Default East Java View
   const [mapZoom, setMapZoom] = useState<number>(9);
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  React.useEffect(() => {
+    // Memberikan delay sangat kecil agar Leaflet punya waktu mengkalkulasi lebar DOM
+    // sehingga marker cluster tidak "hilang" di-paint pertama kali.
+    const timer = setTimeout(() => setIsMapReady(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Separate valid vs missing coordinate schools
   const { validSchools, missingSchools, kabupatenList } = useMemo(() => {
@@ -288,17 +296,6 @@ export default function SchoolMap() {
 
         {/* Right Shortcuts */}
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => {
-              setSearchQuery('');
-              setSelectedKabupaten('all');
-              setSelectedStatus('all');
-            }}
-            className="px-3.5 py-2 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary hover:text-text-primary text-xs font-medium transition-all"
-          >
-            Reset View Jatim
-          </button>
-
           {missingSchools.length > 0 && (
             <button
               onClick={() => setShowMissingModal(true)}
@@ -369,53 +366,55 @@ export default function SchoolMap() {
             />
 
             {/* Smart Marker Cluster Group */}
-            <MarkerClusterGroup
-              chunkedLoading
-              iconCreateFunction={createClusterCustomIcon}
-              maxClusterRadius={50}
-              spiderfyOnMaxZoom={true}
-              showCoverageOnHover={false}
-            >
-              {filteredValidSchools.map((school) => (
-                <Marker
-                  key={school.id}
-                  position={[school.latitude, school.longitude]}
-                  icon={createCustomMarkerIcon(school.status)}
-                  eventHandlers={{
-                    click: () => setSelectedSchool(school)
-                  }}
-                >
-                  <Popup className="custom-leaflet-popup">
-                    <div className="p-1 space-y-1.5 text-slate-800 max-w-xs font-sans">
-                      <div className="flex items-center justify-between gap-2 border-b pb-1">
-                        <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
-                          school.status === 'sudah' ? 'bg-emerald-600' :
-                          school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
-                        }`}>
-                          {school.status.toUpperCase()}
-                        </span>
-                      </div>
+            {isMapReady && (
+              <MarkerClusterGroup
+                chunkedLoading
+                iconCreateFunction={createClusterCustomIcon}
+                maxClusterRadius={50}
+                spiderfyOnMaxZoom={true}
+                showCoverageOnHover={false}
+              >
+                {filteredValidSchools.map((school) => (
+                  <Marker
+                    key={school.id}
+                    position={[school.latitude, school.longitude]}
+                    icon={createCustomMarkerIcon(school.status)}
+                    eventHandlers={{
+                      click: () => setSelectedSchool(school)
+                    }}
+                  >
+                    <Popup className="custom-leaflet-popup">
+                      <div className="p-1 space-y-1.5 text-slate-800 max-w-xs font-sans">
+                        <div className="flex items-center justify-between gap-2 border-b pb-1">
+                          <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
+                            school.status === 'sudah' ? 'bg-emerald-600' :
+                            school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
+                          }`}>
+                            {school.status.toUpperCase()}
+                          </span>
+                        </div>
 
-                      <h4 className="text-xs font-bold text-slate-900 leading-snug">
-                        {school.nama}
-                      </h4>
+                        <h4 className="text-xs font-bold text-slate-900 leading-snug">
+                          {school.nama}
+                        </h4>
 
-                      <div className="text-[11px] text-slate-600 space-y-0.5">
-                        <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
-                        <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
-                      </div>
+                        <div className="text-[11px] text-slate-600 space-y-0.5">
+                          <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
+                          <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
+                        </div>
 
-                      <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-slate-200">
-                        <span>Guru: <strong>{school.totalGuru}</strong></span>
-                        <span>Siswa: <strong>{school.totalSiswa}</strong></span>
-                        <span>Responden: <strong className="text-primary">{school.respondenCount}</strong></span>
+                        <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-slate-200">
+                          <span>Guru: <strong>{school.totalGuru}</strong></span>
+                          <span>Siswa: <strong>{school.totalSiswa}</strong></span>
+                          <span>Responden: <strong className="text-primary">{school.respondenCount}</strong></span>
+                        </div>
                       </div>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MarkerClusterGroup>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MarkerClusterGroup>
+            )}
           </MapContainer>
         </div>
 
