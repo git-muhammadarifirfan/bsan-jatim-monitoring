@@ -94,33 +94,36 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
   });
 };
 
-// Clean Theme Cluster Icon Generator (Warna Primary Theme)
+// Clean Minimalist Round Cluster Icon Generator (Circle Badge)
 const createClusterCustomIcon = (cluster: any) => {
   const count = cluster.getChildCount();
+  let size = 36;
+  if (count > 50) size = 42;
+  if (count > 200) size = 48;
+
   return L.divIcon({
     html: `
       <div style="
+        width: ${size}px;
+        height: ${size}px;
         background: #4F46E5;
         color: #ffffff;
-        border: 2px solid #ffffff;
-        border-radius: 9999px;
-        padding: 4px 12px;
-        font-size: 11px;
+        border: 2.5px solid #ffffff;
+        border-radius: 50%;
+        font-size: ${count > 99 ? '11px' : '12px'};
         font-weight: 700;
         font-family: 'Poppins', sans-serif;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
         display: flex;
         align-items: center;
-        gap: 5px;
-        white-space: nowrap;
+        justify-content: center;
       ">
-        <span style="width: 6px; height: 6px; border-radius: 50%; background: #ffffff;"></span>
-        <span>${count} Sekolah</span>
+        ${count}
       </div>
     `,
     className: 'custom-sleek-cluster-icon',
-    iconSize: [84, 26],
-    iconAnchor: [42, 13]
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
   });
 };
 
@@ -188,16 +191,16 @@ export default function SchoolMap() {
   return (
     <div className="space-y-4 animate-fade-in font-sans">
       
-      {/* Top Filter Bar (Solid Theme Flat Design) */}
+      {/* Top Filter Bar (Clean & Simple) */}
       <div className="bg-surface p-4 rounded-2xl border border-border shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4">
         
-        {/* Left Search & Quick Filters */}
+        {/* Left Search & Filters */}
         <div className="flex flex-wrap items-center gap-3 flex-1">
           <div className="relative min-w-[240px] flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
             <input
               type="text"
-              placeholder="Cari sekolah, NPSN, kecamatan..."
+              placeholder="Cari nama sekolah, NPSN, kecamatan..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 rounded-xl bg-background border border-border text-xs text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 font-sans"
@@ -229,35 +232,25 @@ export default function SchoolMap() {
           </div>
         </div>
 
-        {/* Right Region Shortcut & Missing Coordinates Badge */}
-        <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-border">
-          <button
-            onClick={() => {
-              setMapCenter([-7.4478, 112.7183]);
-              setMapZoom(11);
-            }}
-            className="px-3.5 py-2 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary text-xs font-semibold transition-all"
-          >
-            Sidoarjo
-          </button>
-
+        {/* Right Shortcuts */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => {
               setMapCenter([-7.6000, 112.5000]);
               setMapZoom(9);
             }}
-            className="px-3.5 py-2 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary text-xs font-semibold transition-all"
+            className="px-3.5 py-2 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary hover:text-text-primary text-xs font-medium transition-all"
           >
-            Seluruh Jatim
+            Reset View Jatim
           </button>
 
           {missingSchools.length > 0 && (
             <button
               onClick={() => setShowMissingModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-xs font-bold flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-semibold flex items-center gap-1.5 transition-all"
             >
-              <AlertTriangle className="h-3.5 w-3.5" />
-              <span>{missingSchools.length} No Coord</span>
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+              <span>{missingSchools.length} Sekolah Tanpa Koordinat</span>
             </button>
           )}
         </div>
