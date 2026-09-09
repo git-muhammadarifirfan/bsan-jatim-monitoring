@@ -87,7 +87,7 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
 
   return L.divIcon({
     html: html,
-    className: 'custom-modern-dot-marker',
+    className: 'custom-modern-dot-marker marker-fade-in',
     iconSize: [22, 22],
     iconAnchor: [11, 11],
     popupAnchor: [0, -12]
@@ -124,7 +124,7 @@ const createClusterCustomIcon = (cluster: any) => {
         <span style="display: block; width: 100%; text-align: center; margin: 0; padding: 0;">${count}</span>
       </div>
     `,
-    className: 'custom-sleek-cluster-icon',
+    className: 'custom-sleek-cluster-icon marker-fade-in',
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2]
   });
@@ -256,7 +256,7 @@ export default function SchoolMap() {
     <div className="space-y-4 animate-fade-in font-sans">
       
       {/* Top Filter Bar (Clean & Simple) */}
-      <div className="bg-surface p-4 rounded-2xl border border-border shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-surface p-4 rounded-2xl border border-border shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-[2000]">
         
         {/* Left Search & Filters */}
         <div className="flex flex-wrap items-center gap-3 flex-1">
