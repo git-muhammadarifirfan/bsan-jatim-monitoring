@@ -12,26 +12,24 @@ export default function KecamatanMapPage() {
 
   return (
     <div className="space-y-6 animate-fade-in pb-12">
-      {/* Tab Switch Bar */}
-      <div className="flex items-center justify-between bg-surface p-4 rounded-2xl border border-border shadow-card">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setActiveTab('schools')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-              activeTab === 'schools'
-                ? 'bg-primary text-white shadow-md shadow-primary/20'
-                : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
-            }`}
-          >
-            <SchoolIcon className="h-4 w-4" />
-            <span>Peta Titik Sekolah Asli (GIS Leaflet)</span>
-          </button>
+      {/* Production Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-5 rounded-2xl border border-border shadow-card">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-wider">
+              Peta Geospasial GIS
+            </span>
+            <span className="text-xs text-text-tertiary">| Jawa Timur</span>
+          </div>
+          <h1 className="text-xl font-bold text-text-primary flex items-center gap-2">
+            Peta Persebaran Titik Lokasi Sekolah
+          </h1>
         </div>
 
-        <span className="text-xs text-text-tertiary hidden sm:inline-flex items-center gap-1 font-medium">
-          <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-          CARTO Voyager Tile & Geolocation Real-time
-        </span>
+        <div className="flex items-center gap-2 text-xs text-text-secondary bg-background px-3.5 py-2 rounded-xl border border-border">
+          <SchoolIcon className="h-4 w-4 text-primary" />
+          <span className="font-semibold">Pemetaan Geografis SD Mitra</span>
+        </div>
       </div>
 
       {/* Main Content Render */}

@@ -94,7 +94,7 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
   });
 };
 
-// Clean Minimalist Round Cluster Icon Generator (Circle Badge)
+// Clean Minimalist Round Cluster Icon Generator (Perfectly Centered Circle Badge)
 const createClusterCustomIcon = (cluster: any) => {
   const count = cluster.getChildCount();
   let size = 36;
@@ -106,19 +106,22 @@ const createClusterCustomIcon = (cluster: any) => {
       <div style="
         width: ${size}px;
         height: ${size}px;
-        background: #4F46E5;
+        background-color: #4F46E5;
         color: #ffffff;
         border: 2.5px solid #ffffff;
         border-radius: 50%;
         font-size: ${count > 99 ? '11px' : '12px'};
         font-weight: 700;
         font-family: 'Poppins', sans-serif;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
+        text-align: center;
+        line-height: 1;
+        box-sizing: border-box;
       ">
-        ${count}
+        <span style="display: block; width: 100%; text-align: center; margin: 0; padding: 0;">${count}</span>
       </div>
     `,
     className: 'custom-sleek-cluster-icon',
@@ -247,9 +250,9 @@ export default function SchoolMap() {
           {missingSchools.length > 0 && (
             <button
               onClick={() => setShowMissingModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-semibold flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all active:scale-95"
             >
-              <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+              <AlertTriangle className="h-4 w-4 text-white" />
               <span>{missingSchools.length} Sekolah Tanpa Koordinat</span>
             </button>
           )}
