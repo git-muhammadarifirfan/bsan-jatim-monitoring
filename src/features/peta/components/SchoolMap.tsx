@@ -210,7 +210,7 @@ export default function SchoolMap() {
             />
           </div>
 
-          <div className="w-44">
+          <div className="w-48">
             <CustomSelect
               value={selectedKabupaten}
               onChange={(val) => setSelectedKabupaten(val)}
@@ -221,13 +221,13 @@ export default function SchoolMap() {
             />
           </div>
 
-          <div className="w-36">
+          <div className="w-40">
             <CustomSelect
               value={selectedStatus}
               onChange={(val) => setSelectedStatus(val)}
               options={[
                 { value: 'all', label: 'Semua Status' },
-                { value: 'sudah', label: 'Sudah' },
+                { value: 'sudah', label: 'Sudah (Lengkap)' },
                 { value: 'sebagian', label: 'Sebagian' },
                 { value: 'belum', label: 'Belum' }
               ]}
