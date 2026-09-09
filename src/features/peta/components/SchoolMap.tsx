@@ -87,7 +87,7 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
 
   return L.divIcon({
     html: html,
-    className: 'custom-modern-dot-marker marker-fade-in',
+    className: 'custom-modern-dot-marker',
     iconSize: [22, 22],
     iconAnchor: [11, 11],
     popupAnchor: [0, -12]
@@ -124,9 +124,9 @@ const createClusterCustomIcon = (cluster: any) => {
         <span style="display: block; width: 100%; text-align: center; margin: 0; padding: 0;">${count}</span>
       </div>
     `,
-    className: 'custom-sleek-cluster-icon marker-fade-in',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2]
+    className: 'custom-sleek-cluster-icon',
+    iconSize: L.point(size, size, true),
+    iconAnchor: L.point(size / 2, size / 2)
   });
 };
 
