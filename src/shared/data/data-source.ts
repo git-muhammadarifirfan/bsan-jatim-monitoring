@@ -766,7 +766,19 @@ export const database = {
       // Status Implementasi per Posisi
       const posMap: Record<string, { belumMenerima: number; tidakMenerapkan: number; sebagian: number; sudah: number; total: number }> = {};
       respondents.forEach(r => {
-        const pos = r.posisi || 'Guru';
+        let pos = (r.posisi || 'Guru').trim();
+        // Clean long free-text position answers
+        if (pos.length > 25) {
+          if (pos.toLowerCase().includes('guru kelas 1')) pos = 'Guru Kelas 1';
+          else if (pos.toLowerCase().includes('guru kelas 2')) pos = 'Guru Kelas 2';
+          else if (pos.toLowerCase().includes('guru kelas 3')) pos = 'Guru Kelas 3';
+          else if (pos.toLowerCase().includes('guru kelas 4')) pos = 'Guru Kelas 4';
+          else if (pos.toLowerCase().includes('guru kelas 5')) pos = 'Guru Kelas 5';
+          else if (pos.toLowerCase().includes('guru kelas 6')) pos = 'Guru Kelas 6';
+          else if (pos.toLowerCase().includes('pjok')) pos = 'Guru PJOK';
+          else if (pos.toLowerCase().includes('kepala sekolah')) pos = 'Kepala Sekolah';
+          else pos = pos.slice(0, 22) + '...';
+        }
         if (!posMap[pos]) posMap[pos] = { belumMenerima: 0, tidakMenerapkan: 0, sebagian: 0, sudah: 0, total: 0 };
         posMap[pos].total++;
         if (r.penerima === 'Tidak') posMap[pos].belumMenerima++;
@@ -785,27 +797,31 @@ export const database = {
           sebagian: Math.round((item.sebagian / tot) * 100),
           sudah: Math.round((item.sudah / tot) * 100)
         };
-      });
+      }).slice(0, 10);
 
       if (statusImplementasiPosisi.length === 0) {
         statusImplementasiPosisi = [
           { posisi: 'Kepala Sekolah', belumMenerima: 15, tidakMenerapkan: 5, sebagian: 30, sudah: 50 },
           { posisi: 'Guru Kelas Awal (1-3)', belumMenerima: 25, tidakMenerapkan: 10, sebagian: 35, sudah: 30 },
           { posisi: 'Guru Kelas Tinggi (4-6)', belumMenerima: 30, tidakMenerapkan: 12, sebagian: 32, sudah: 26 },
-          { posisi: 'Guru Mapel', belumMenerima: 40, tidakMenerapkan: 15, sebagian: 28, sudah: 17 }
+          { posisi: 'Guru Mapel / PJOK', belumMenerima: 40, tidakMenerapkan: 15, sebagian: 28, sudah: 17 }
         ];
       }
 
       // Status Implementasi per Kecamatan
       const kecImplMap: Record<string, { belumMenerima: number; tidakMenerapkan: number; sebagian: number; sudah: number; total: number }> = {};
       respondents.forEach(r => {
-        if (!r.kecamatan) return;
-        if (!kecImplMap[r.kecamatan]) kecImplMap[r.kecamatan] = { belumMenerima: 0, tidakMenerapkan: 0, sebagian: 0, sudah: 0, total: 0 };
-        kecImplMap[r.kecamatan].total++;
-        if (r.penerima === 'Tidak') kecImplMap[r.kecamatan].belumMenerima++;
-        else if (r.statusImplementasi === 'sudah') kecImplMap[r.kecamatan].sudah++;
-        else if (r.statusImplementasi === 'sebagian') kecImplMap[r.kecamatan].sebagian++;
-        else kecImplMap[r.kecamatan].tidakMenerapkan++;
+        let kec = (r.kecamatan || '').trim();
+        if (!kec) return;
+        if (kec.length > 25) {
+          kec = kec.slice(0, 22) + '...';
+        }
+        if (!kecImplMap[kec]) kecImplMap[kec] = { belumMenerima: 0, tidakMenerapkan: 0, sebagian: 0, sudah: 0, total: 0 };
+        kecImplMap[kec].total++;
+        if (r.penerima === 'Tidak') kecImplMap[kec].belumMenerima++;
+        else if (r.statusImplementasi === 'sudah') kecImplMap[kec].sudah++;
+        else if (r.statusImplementasi === 'sebagian') kecImplMap[kec].sebagian++;
+        else kecImplMap[kec].tidakMenerapkan++;
       });
 
       let statusImplementasiKecamatan = Object.keys(kecImplMap).map(k => {
@@ -818,7 +834,7 @@ export const database = {
           sebagian: Math.round((item.sebagian / tot) * 100),
           sudah: Math.round((item.sudah / tot) * 100)
         };
-      });
+      }).slice(0, 10);
 
       if (statusImplementasiKecamatan.length === 0) {
         statusImplementasiKecamatan = distribusiPerKecamatan.map((d, i) => ({
