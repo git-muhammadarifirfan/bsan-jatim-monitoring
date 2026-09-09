@@ -164,15 +164,16 @@ function MapController({
     map.invalidateSize();
 
     // 2. Automatically adjust view based on selected kabupaten / status filter
-    if (selectedKabupaten !== 'all' && REGION_CENTERS[selectedKabupaten]) {
-      const region = REGION_CENTERS[selectedKabupaten];
-      map.flyTo(region.center, region.zoom, { duration: 0.8 });
+    if (selectedKabupaten === 'all' && selectedStatus === 'all') {
+      // Reset view to entire East Java region smoothly
+      map.flyTo([-7.6000, 112.5000], 9, { duration: 0.8 });
     } else if (filteredSchools.length > 0) {
-      if (selectedKabupaten === 'all' && selectedStatus === 'all') {
-        // Reset view to entire East Java region
-        map.flyTo([-7.6000, 112.5000], 9, { duration: 0.8 });
+      if (selectedKabupaten !== 'all' && selectedStatus === 'all' && REGION_CENTERS[selectedKabupaten]) {
+        // Direct center zoom if only kabupaten is selected
+        const region = REGION_CENTERS[selectedKabupaten];
+        map.flyTo(region.center, region.zoom, { duration: 0.8 });
       } else {
-        // Fit bounds around filtered schools
+        // Fit bounds around active filtered markers (for status change or combined filter)
         const bounds = L.latLngBounds(filteredSchools.map(s => [s.latitude, s.longitude]));
         if (bounds.isValid()) {
           map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13, animate: true });
