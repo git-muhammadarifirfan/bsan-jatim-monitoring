@@ -192,20 +192,12 @@ function MapController({
 
 export default function SchoolMap() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedKabupaten, setSelectedKabupaten] = useState<string>(''); // Default empty
+  const [selectedKabupaten, setSelectedKabupaten] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedSchool, setSelectedSchool] = useState<SchoolMapItem | null>(null);
   const [showMissingModal, setShowMissingModal] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([-7.6000, 112.5000]); // Default East Java View
   const [mapZoom, setMapZoom] = useState<number>(9);
-  const [isMapReady, setIsMapReady] = useState(false);
-
-  React.useEffect(() => {
-    // Memberikan delay sangat kecil agar Leaflet punya waktu mengkalkulasi lebar DOM
-    // sehingga marker cluster tidak "hilang" di-paint pertama kali.
-    const timer = setTimeout(() => setIsMapReady(true), 50);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Separate valid vs missing coordinate schools
   const { validSchools, missingSchools, kabupatenList } = useMemo(() => {
@@ -231,8 +223,6 @@ export default function SchoolMap() {
 
   // Filtered Schools with coordinates
   const filteredValidSchools = useMemo(() => {
-    if (selectedKabupaten === '') return []; // Jika belum pilih wilayah, kosongkan marker
-
     return validSchools.filter((s) => {
       const matchSearch = s.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.npsn.includes(searchQuery) ||
@@ -256,7 +246,7 @@ export default function SchoolMap() {
     <div className="space-y-4 animate-fade-in font-sans">
       
       {/* Top Filter Bar (Clean & Simple) */}
-      <div className="bg-surface p-4 rounded-2xl border border-border shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-[2000]">
+      <div className="bg-surface p-4 rounded-2xl border border-border shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Left Search & Filters */}
         <div className="flex flex-wrap items-center gap-3 flex-1">
@@ -276,8 +266,7 @@ export default function SchoolMap() {
               value={selectedKabupaten}
               onChange={(val) => setSelectedKabupaten(val)}
               options={[
-                { value: '', label: 'Pilih Wilayah...' },
-                { value: 'all', label: 'Semua Wilayah (Jawa Timur)' },
+                { value: 'all', label: 'Semua Wilayah' },
                 ...kabupatenList.map(k => ({ value: k, label: k }))
               ]}
             />
@@ -348,20 +337,6 @@ export default function SchoolMap() {
         
         {/* Left 3 Columns: Leaflet Map Container */}
         <div className="lg:col-span-3 rounded-2xl border border-border bg-surface overflow-hidden shadow-card relative min-h-[560px]">
-          
-          {/* Overlay jika belum ada wilayah yang dipilih */}
-          {selectedKabupaten === '' && (
-            <div className="absolute inset-0 z-[1000] bg-surface/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <MapPin className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-lg font-bold text-text-primary mb-2">Pilih Wilayah Terlebih Dahulu</h3>
-              <p className="text-sm text-text-secondary max-w-md">
-                Silakan pilih opsi pada dropdown <span className="font-semibold text-text-primary">"Semua Wilayah"</span> atau kabupaten/kota tertentu di atas untuk mulai menampilkan sebaran titik lokasi sekolah pada peta.
-              </p>
-            </div>
-          )}
-
           <MapContainer
             center={mapCenter}
             zoom={mapZoom}
@@ -383,55 +358,53 @@ export default function SchoolMap() {
             />
 
             {/* Smart Marker Cluster Group */}
-            {isMapReady && (
-              <MarkerClusterGroup
-                chunkedLoading
-                iconCreateFunction={createClusterCustomIcon}
-                maxClusterRadius={50}
-                spiderfyOnMaxZoom={true}
-                showCoverageOnHover={false}
-              >
-                {filteredValidSchools.map((school) => (
-                  <Marker
-                    key={school.id}
-                    position={[school.latitude, school.longitude]}
-                    icon={createCustomMarkerIcon(school.status)}
-                    eventHandlers={{
-                      click: () => setSelectedSchool(school)
-                    }}
-                  >
-                    <Popup className="custom-leaflet-popup">
-                      <div className="p-1 space-y-1.5 text-slate-800 max-w-xs font-sans">
-                        <div className="flex items-center justify-between gap-2 border-b pb-1">
-                          <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
-                            school.status === 'sudah' ? 'bg-emerald-600' :
-                            school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
-                          }`}>
-                            {school.status.toUpperCase()}
-                          </span>
-                        </div>
-
-                        <h4 className="text-xs font-bold text-slate-900 leading-snug">
-                          {school.nama}
-                        </h4>
-
-                        <div className="text-[11px] text-slate-600 space-y-0.5">
-                          <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
-                          <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
-                        </div>
-
-                        <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-slate-200">
-                          <span>Guru: <strong>{school.totalGuru}</strong></span>
-                          <span>Siswa: <strong>{school.totalSiswa}</strong></span>
-                          <span>Responden: <strong className="text-primary">{school.respondenCount}</strong></span>
-                        </div>
+            <MarkerClusterGroup
+              chunkedLoading
+              iconCreateFunction={createClusterCustomIcon}
+              maxClusterRadius={50}
+              spiderfyOnMaxZoom={true}
+              showCoverageOnHover={false}
+            >
+              {filteredValidSchools.map((school) => (
+                <Marker
+                  key={school.id}
+                  position={[school.latitude, school.longitude]}
+                  icon={createCustomMarkerIcon(school.status)}
+                  eventHandlers={{
+                    click: () => setSelectedSchool(school)
+                  }}
+                >
+                  <Popup className="custom-leaflet-popup">
+                    <div className="p-1 space-y-1.5 text-slate-800 max-w-xs font-sans">
+                      <div className="flex items-center justify-between gap-2 border-b pb-1">
+                        <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
+                          school.status === 'sudah' ? 'bg-emerald-600' :
+                          school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
+                        }`}>
+                          {school.status.toUpperCase()}
+                        </span>
                       </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MarkerClusterGroup>
-            )}
+
+                      <h4 className="text-xs font-bold text-slate-900 leading-snug">
+                        {school.nama}
+                      </h4>
+
+                      <div className="text-[11px] text-slate-600 space-y-0.5">
+                        <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
+                        <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
+                      </div>
+
+                      <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-slate-200">
+                        <span>Guru: <strong>{school.totalGuru}</strong></span>
+                        <span>Siswa: <strong>{school.totalSiswa}</strong></span>
+                        <span>Responden: <strong className="text-primary">{school.respondenCount}</strong></span>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MarkerClusterGroup>
           </MapContainer>
         </div>
 
