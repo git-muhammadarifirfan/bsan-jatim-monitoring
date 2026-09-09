@@ -246,23 +246,23 @@ export default function SchoolMap() {
   return (
     <div className="space-y-4 animate-fade-in font-sans">
       
-      {/* Top Filter Bar (Clean & Simple) */}
-      <div className="bg-surface p-4 rounded-2xl border border-border shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Top Filter Bar (Clean & Responsive) */}
+      <div className="bg-surface p-3.5 sm:p-4 rounded-2xl border border-border shadow-card flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         
-        {/* Left Search & Filters */}
-        <div className="flex flex-wrap items-center gap-3 flex-1">
-          <div className="relative min-w-[240px] flex-1">
+        {/* Search & Filters Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-1">
+          <div className="relative min-w-0">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
             <input
               type="text"
-              placeholder="Cari nama sekolah, NPSN, kecamatan..."
+              placeholder="Cari nama sekolah, NPSN..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 rounded-xl bg-background border border-border text-xs text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 font-sans"
             />
           </div>
 
-          <div className="w-48">
+          <div className="w-full">
             <CustomSelect
               value={selectedKabupaten}
               onChange={(val) => setSelectedKabupaten(val)}
@@ -273,7 +273,7 @@ export default function SchoolMap() {
             />
           </div>
 
-          <div className="w-40">
+          <div className="w-full">
             <CustomSelect
               value={selectedStatus}
               onChange={(val) => setSelectedStatus(val)}
@@ -287,65 +287,64 @@ export default function SchoolMap() {
           </div>
         </div>
 
-        {/* Right Shortcuts */}
-        <div className="flex items-center gap-2 shrink-0">
-          {missingSchools.length > 0 && (
+        {/* Missing Coordinates Trigger */}
+        {missingSchools.length > 0 && (
+          <div className="flex items-center shrink-0">
             <button
               onClick={() => setShowMissingModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all active:scale-95"
+              className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95"
             >
-              <AlertTriangle className="h-4 w-4 text-white" />
-              <span>{missingSchools.length} Sekolah Tanpa Koordinat</span>
+              <AlertTriangle className="h-4 w-4 text-white shrink-0" />
+              <span>{missingSchools.length} Tanpa Koordinat</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Status Legend Indicator Strip (Solid Surface Design) */}
-      <div className="bg-surface p-3.5 rounded-2xl border border-border shadow-card flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-4">
-          <span className="font-bold text-text-primary flex items-center gap-1.5">
+      {/* Status Legend Indicator Strip (Responsive Flex-Wrap) */}
+      <div className="bg-surface p-3.5 rounded-2xl border border-border shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <span className="font-bold text-text-primary flex items-center gap-1.5 shrink-0">
             <Filter className="h-3.5 w-3.5 text-primary" /> Status Survei:
           </span>
 
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-emerald-500" />
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />
             <span className="text-text-secondary font-medium">Sudah:</span>
             <span className="font-bold text-text-primary">{statusStats.sudah}</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-amber-500" />
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-500 shrink-0" />
             <span className="text-text-secondary font-medium">Sebagian:</span>
             <span className="font-bold text-text-primary">{statusStats.sebagian}</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-rose-500" />
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shrink-0" />
             <span className="text-text-secondary font-medium">Belum:</span>
             <span className="font-bold text-text-primary">{statusStats.belum}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 text-text-tertiary text-[11px] font-medium">
-          <Building2 className="h-3.5 w-3.5 text-primary" />
-          <span>Menampilkan <strong>{filteredValidSchools.length}</strong> dari {statusStats.total} Sekolah</span>
+        <div className="flex items-center gap-1.5 text-text-tertiary text-[11px] font-medium pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60">
+          <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
+          <span>Menampilkan <strong className="text-text-primary">{filteredValidSchools.length}</strong> dari {statusStats.total} Sekolah</span>
         </div>
       </div>
 
       {/* Main Map Box & Detail Drawer */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         
-        {/* Left 3 Columns: Leaflet Map Container */}
-        <div className="lg:col-span-3 rounded-2xl border border-border bg-surface overflow-hidden shadow-card relative min-h-[560px]">
+        {/* Map Container (Responsive Height for Mobile/Tablet) */}
+        <div className="lg:col-span-3 rounded-2xl border border-border bg-surface overflow-hidden shadow-card relative min-h-[420px] sm:min-h-[500px] lg:min-h-[560px]">
           <MapContainer
             center={mapCenter}
             zoom={mapZoom}
             scrollWheelZoom={true}
-            style={{ width: '100%', height: '560px', zIndex: 1 }}
+            style={{ width: '100%', height: '100%', minHeight: '420px', zIndex: 1 }}
             className="rounded-2xl"
             whenReady={() => {
-              // Ensure Leaflet recalculates bounds as soon as container is mounted
               window.dispatchEvent(new Event('resize'));
             }}
           >
@@ -409,10 +408,10 @@ export default function SchoolMap() {
           </MapContainer>
         </div>
 
-        {/* Right 1 Column: Solid Theme Detail Panel */}
+        {/* Right 1 Column / Mobile Bottom Drawer: Detail Panel */}
         <div className="space-y-3">
           {selectedSchool ? (
-            <div className="p-4 rounded-2xl bg-surface border border-border shadow-card space-y-4 animate-fade-in font-sans">
+            <div className="p-4 rounded-2xl bg-surface border border-border shadow-card space-y-4 animate-tab-content font-sans">
               <div className="flex items-start justify-between gap-2 border-b border-border pb-3">
                 <div>
                   <span className="text-[10px] font-mono text-text-tertiary uppercase">NPSN: {selectedSchool.npsn}</span>
@@ -478,18 +477,18 @@ export default function SchoolMap() {
                   setMapCenter([selectedSchool.latitude, selectedSchool.longitude]);
                   setMapZoom(16);
                 }}
-                className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 active:scale-98"
               >
                 <MapPin className="h-3.5 w-3.5" />
                 <span>Zoom ke Lokasi Sekolah</span>
               </button>
             </div>
           ) : (
-            <div className="p-6 rounded-2xl bg-surface border border-border shadow-card text-center space-y-3 min-h-[260px] flex flex-col items-center justify-center">
-              <Building2 className="h-8 w-8 text-primary opacity-60" />
+            <div className="p-5 rounded-2xl bg-surface border border-border shadow-card text-center space-y-2.5 min-h-[160px] lg:min-h-[260px] flex flex-col items-center justify-center animate-fade-in">
+              <Building2 className="h-7 w-7 text-primary opacity-60" />
               <h4 className="text-xs font-bold text-text-primary">Pilih Sekolah di Peta</h4>
               <p className="text-xs text-text-secondary max-w-xs leading-relaxed">
-                Klik salah satu titik sekolah di peta atau bulatan cluster untuk melihat rincian lokasi dan status kuesioner.
+                Klik titik sekolah atau bulatan cluster untuk melihat rincian detail lokasi dan kuesioner.
               </p>
             </div>
           )}
