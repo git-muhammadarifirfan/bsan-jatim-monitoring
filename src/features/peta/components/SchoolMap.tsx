@@ -47,7 +47,7 @@ export interface SchoolMapItem {
 
 const schoolData = schoolDataRaw as SchoolMapItem[];
 
-// Modern Subtle Pulsing Dot Marker
+// Modern Sleek Pin Dot Marker (Clear & Distinct)
 const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
   let colorHex = '#e11d48'; // Merah
   if (status === 'sudah') colorHex = '#10b981'; // Hijau
@@ -56,11 +56,12 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
   const html = `
     <div style="
       position: relative;
-      width: 16px;
-      height: 16px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
     ">
       <div style="
         position: absolute;
@@ -68,26 +69,38 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
         height: 100%;
         border-radius: 50%;
         background-color: ${colorHex};
-        opacity: 0.35;
-        animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        opacity: 0.25;
+        animation: ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
       "></div>
       <div style="
-        width: 10px;
-        height: 10px;
+        position: relative;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         background-color: ${colorHex};
-        border: 2px solid #ffffff;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-      "></div>
+        border: 2.5px solid #ffffff;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+      ">
+        <div style="
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: #ffffff;
+        "></div>
+      </div>
     </div>
   `;
 
   return L.divIcon({
     html: html,
     className: 'custom-modern-dot-marker',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
-    popupAnchor: [0, -10]
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -14]
   });
 };
 
