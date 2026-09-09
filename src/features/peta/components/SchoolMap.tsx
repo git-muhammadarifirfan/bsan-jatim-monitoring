@@ -130,21 +130,62 @@ const createClusterCustomIcon = (cluster: any) => {
   });
 };
 
-// Helper Component untuk kontrol viewport & pemaksaan update initial render Leaflet
-function MapController({ center, zoom }: { center: [number, number]; zoom: number }) {
+// Coordinates lookup for specific regions
+const REGION_CENTERS: Record<string, { center: [number, number]; zoom: number }> = {
+  'all': { center: [-7.6000, 112.5000], zoom: 9 },
+  'Kab. Sidoarjo': { center: [-7.4478, 112.7183], zoom: 12 },
+  'Kota Batu': { center: [-7.8700, 112.5270], zoom: 13 },
+  'Kab. Tuban': { center: [-6.8970, 112.0450], zoom: 11 },
+};
+
+// Helper Component untuk manual zoom (tombol Zoom ke Lokasi)
+function MapFlyToController({ center, zoom }: { center: [number, number]; zoom: number }) {
   const map = useMap();
-  
   React.useEffect(() => {
     map.flyTo(center, zoom, { duration: 1.0 });
   }, [center, zoom, map]);
+  return null;
+}
 
+// Helper Component untuk kontrol viewport & auto update pada filter & refresh
+function MapController({ 
+  selectedKabupaten, 
+  selectedStatus,
+  filteredSchools 
+}: { 
+  selectedKabupaten: string; 
+  selectedStatus: string;
+  filteredSchools: SchoolMapItem[];
+}) {
+  const map = useMap();
+  
   React.useEffect(() => {
-    // Invalidate map size and trigger Leaflet event loop update on initial mount
+    // 1. Invalidate map size on load/render
+    map.invalidateSize();
+
+    // 2. Automatically adjust view based on selected kabupaten / status filter
+    if (selectedKabupaten !== 'all' && REGION_CENTERS[selectedKabupaten]) {
+      const region = REGION_CENTERS[selectedKabupaten];
+      map.flyTo(region.center, region.zoom, { duration: 0.8 });
+    } else if (filteredSchools.length > 0) {
+      if (selectedKabupaten === 'all' && selectedStatus === 'all') {
+        // Reset view to entire East Java region
+        map.flyTo([-7.6000, 112.5000], 9, { duration: 0.8 });
+      } else {
+        // Fit bounds around filtered schools
+        const bounds = L.latLngBounds(filteredSchools.map(s => [s.latitude, s.longitude]));
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13, animate: true });
+        }
+      }
+    }
+
+    // Force Leaflet recalculation
     const timer = setTimeout(() => {
       map.invalidateSize();
     }, 150);
     return () => clearTimeout(timer);
-  }, [map]);
+  }, [selectedKabupaten, selectedStatus, filteredSchools, map]);
 
   return null;
 }
@@ -249,8 +290,9 @@ export default function SchoolMap() {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => {
-              setMapCenter([-7.6000, 112.5000]);
-              setMapZoom(9);
+              setSearchQuery('');
+              setSelectedKabupaten('all');
+              setSelectedStatus('all');
             }}
             className="px-3.5 py-2 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary hover:text-text-primary text-xs font-medium transition-all"
           >
@@ -317,7 +359,8 @@ export default function SchoolMap() {
               window.dispatchEvent(new Event('resize'));
             }}
           >
-            <MapController center={mapCenter} zoom={mapZoom} />
+            <MapController selectedKabupaten={selectedKabupaten} selectedStatus={selectedStatus} filteredSchools={filteredValidSchools} />
+            <MapFlyToController center={mapCenter} zoom={mapZoom} />
 
             {/* OpenStreetMap Basemap */}
             <TileLayer
@@ -327,7 +370,6 @@ export default function SchoolMap() {
 
             {/* Smart Marker Cluster Group */}
             <MarkerClusterGroup
-              key={`cluster-${filteredValidSchools.length}-${selectedKabupaten}-${selectedStatus}`}
               chunkedLoading
               iconCreateFunction={createClusterCustomIcon}
               maxClusterRadius={50}
