@@ -192,7 +192,7 @@ function MapController({
 
 export default function SchoolMap() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedKabupaten, setSelectedKabupaten] = useState<string>('all');
+  const [selectedKabupaten, setSelectedKabupaten] = useState<string>(''); // Default empty
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedSchool, setSelectedSchool] = useState<SchoolMapItem | null>(null);
   const [showMissingModal, setShowMissingModal] = useState(false);
@@ -231,6 +231,8 @@ export default function SchoolMap() {
 
   // Filtered Schools with coordinates
   const filteredValidSchools = useMemo(() => {
+    if (selectedKabupaten === '') return []; // Jika belum pilih wilayah, kosongkan marker
+
     return validSchools.filter((s) => {
       const matchSearch = s.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.npsn.includes(searchQuery) ||
@@ -274,7 +276,8 @@ export default function SchoolMap() {
               value={selectedKabupaten}
               onChange={(val) => setSelectedKabupaten(val)}
               options={[
-                { value: 'all', label: 'Semua Wilayah' },
+                { value: '', label: 'Pilih Wilayah...' },
+                { value: 'all', label: 'Semua Wilayah (Jawa Timur)' },
                 ...kabupatenList.map(k => ({ value: k, label: k }))
               ]}
             />
@@ -345,6 +348,20 @@ export default function SchoolMap() {
         
         {/* Left 3 Columns: Leaflet Map Container */}
         <div className="lg:col-span-3 rounded-2xl border border-border bg-surface overflow-hidden shadow-card relative min-h-[560px]">
+          
+          {/* Overlay jika belum ada wilayah yang dipilih */}
+          {selectedKabupaten === '' && (
+            <div className="absolute inset-0 z-[1000] bg-surface/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <MapPin className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-text-primary mb-2">Pilih Wilayah Terlebih Dahulu</h3>
+              <p className="text-sm text-text-secondary max-w-md">
+                Silakan pilih opsi pada dropdown <span className="font-semibold text-text-primary">"Semua Wilayah"</span> atau kabupaten/kota tertentu di atas untuk mulai menampilkan sebaran titik lokasi sekolah pada peta.
+              </p>
+            </div>
+          )}
+
           <MapContainer
             center={mapCenter}
             zoom={mapZoom}
