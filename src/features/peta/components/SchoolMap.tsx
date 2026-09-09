@@ -145,8 +145,8 @@ export default function SchoolMap() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedSchool, setSelectedSchool] = useState<SchoolMapItem | null>(null);
   const [showMissingModal, setShowMissingModal] = useState(false);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([-7.4478, 112.7183]); // Default Sidoarjo
-  const [mapZoom, setMapZoom] = useState<number>(11);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([-7.6000, 112.5000]); // Default East Java View
+  const [mapZoom, setMapZoom] = useState<number>(9);
 
   // Separate valid vs missing coordinate schools
   const { validSchools, missingSchools, kabupatenList } = useMemo(() => {
