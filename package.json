@@ -12,14 +12,17 @@
   "dependencies": {
     "@tanstack/react-query": "^5.102.5",
     "@types/file-saver": "^2.0.7",
+    "@types/leaflet": "^1.9.22",
     "docx": "^9.7.1",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "0.10.2",
     "jspdf": "^4.2.1",
+    "leaflet": "^1.9.4",
     "lucide-react": "^1.34.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "^7.18.2",
     "react-simple-maps": "^3.0.0",
     "recharts": "^3.10.1"
