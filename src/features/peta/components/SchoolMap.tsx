@@ -1,6 +1,6 @@
 /**
  * @module features/peta/components
- * @description Komponen Peta GIS Sekolah Jawa Timur — Ultra Clean, Minimalist & Modern SaaS Design
+ * @description Komponen Peta GIS Sekolah Jawa Timur — Clean Flat Theme (No Liquid Glass, Matching Color Scheme, Font Poppins)
  */
 
 import React, { useState, useMemo } from 'react';
@@ -56,34 +56,24 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
   const html = `
     <div style="
       position: relative;
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
     ">
       <div style="
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background-color: ${colorHex};
-        opacity: 0.25;
-        animation: ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-      "></div>
-      <div style="
         position: relative;
         width: 18px;
         height: 18px;
         border-radius: 50%;
         background-color: ${colorHex};
-        border: 2.5px solid #ffffff;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: transform 0.2s ease;
       ">
         <div style="
           width: 6px;
@@ -98,38 +88,39 @@ const createCustomMarkerIcon = (status: 'sudah' | 'sebagian' | 'belum') => {
   return L.divIcon({
     html: html,
     className: 'custom-modern-dot-marker',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -14]
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -12]
   });
 };
 
-// Sleek Pill Cluster Icon Generator
+// Clean Theme Cluster Icon Generator (Warna Primary Theme)
 const createClusterCustomIcon = (cluster: any) => {
   const count = cluster.getChildCount();
   return L.divIcon({
     html: `
       <div style="
-        background: #0f172a;
+        background: #4F46E5;
         color: #ffffff;
         border: 2px solid #ffffff;
         border-radius: 9999px;
-        padding: 4px 10px;
+        padding: 4px 12px;
         font-size: 11px;
         font-weight: 700;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
         white-space: nowrap;
       ">
-        <span style="width: 6px; height: 6px; border-radius: 50%; background: #6366f1;"></span>
+        <span style="width: 6px; height: 6px; border-radius: 50%; background: #ffffff;"></span>
         <span>${count} Sekolah</span>
       </div>
     `,
     className: 'custom-sleek-cluster-icon',
-    iconSize: [80, 26],
-    iconAnchor: [40, 13]
+    iconSize: [84, 26],
+    iconAnchor: [42, 13]
   });
 };
 
@@ -195,21 +186,21 @@ export default function SchoolMap() {
   }, []);
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-4 animate-fade-in font-sans">
       
-      {/* Top Filter & Status Bar (Minimalist Flat Layout) */}
-      <div className="bg-surface p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Top Filter Bar (Solid Theme Flat Design) */}
+      <div className="bg-surface p-4 rounded-2xl border border-border shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Left Search & Quick Filters */}
         <div className="flex flex-wrap items-center gap-3 flex-1">
           <div className="relative min-w-[240px] flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
             <input
               type="text"
               placeholder="Cari sekolah, NPSN, kecamatan..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-background border border-border/80 text-xs text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full pl-9 pr-3 py-2 rounded-xl bg-background border border-border text-xs text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 font-sans"
             />
           </div>
 
@@ -239,13 +230,13 @@ export default function SchoolMap() {
         </div>
 
         {/* Right Region Shortcut & Missing Coordinates Badge */}
-        <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-border/60">
+        <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-border">
           <button
             onClick={() => {
               setMapCenter([-7.4478, 112.7183]);
               setMapZoom(11);
             }}
-            className="px-3 py-1.5 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary text-xs font-bold transition-all"
+            className="px-3.5 py-2 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary text-xs font-semibold transition-all"
           >
             Sidoarjo
           </button>
@@ -255,7 +246,7 @@ export default function SchoolMap() {
               setMapCenter([-7.6000, 112.5000]);
               setMapZoom(9);
             }}
-            className="px-3 py-1.5 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary text-xs font-bold transition-all"
+            className="px-3.5 py-2 rounded-xl bg-background hover:bg-surface-hover border border-border text-text-secondary text-xs font-semibold transition-all"
           >
             Seluruh Jatim
           </button>
@@ -263,7 +254,7 @@ export default function SchoolMap() {
           {missingSchools.length > 0 && (
             <button
               onClick={() => setShowMissingModal(true)}
-              className="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-600 border border-rose-500/20 text-xs font-bold flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-xs font-bold flex items-center gap-1.5"
             >
               <AlertTriangle className="h-3.5 w-3.5" />
               <span>{missingSchools.length} No Coord</span>
@@ -272,114 +263,117 @@ export default function SchoolMap() {
         </div>
       </div>
 
-      {/* Main Map Box & Floating Overlay Card */}
-      <div className="relative rounded-2xl border border-border bg-surface overflow-hidden shadow-sm min-h-[580px]">
-        
-        {/* Leaflet Map Canvas */}
-        <MapContainer
-          center={mapCenter}
-          zoom={mapZoom}
-          scrollWheelZoom={true}
-          style={{ width: '100%', height: '580px', zIndex: 1 }}
-          className="rounded-2xl"
-        >
-          <MapFlyToController center={mapCenter} zoom={mapZoom} />
+      {/* Status Legend Indicator Strip (Solid Surface Design) */}
+      <div className="bg-surface p-3.5 rounded-2xl border border-border shadow-card flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-4">
+          <span className="font-bold text-text-primary flex items-center gap-1.5">
+            <Filter className="h-3.5 w-3.5 text-primary" /> Status Survei:
+          </span>
 
-          {/* OpenStreetMap Standard Basemap */}
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          {/* Smart Marker Cluster Group */}
-          <MarkerClusterGroup
-            chunkedLoading
-            iconCreateFunction={createClusterCustomIcon}
-            maxClusterRadius={50}
-            spiderfyOnMaxZoom={true}
-            showCoverageOnHover={false}
-          >
-            {filteredValidSchools.map((school) => (
-              <Marker
-                key={school.id}
-                position={[school.latitude, school.longitude]}
-                icon={createCustomMarkerIcon(school.status)}
-                eventHandlers={{
-                  click: () => setSelectedSchool(school)
-                }}
-              >
-                <Popup className="custom-leaflet-popup">
-                  <div className="p-1 space-y-1.5 text-slate-800 max-w-xs">
-                    <div className="flex items-center justify-between gap-2 border-b pb-1">
-                      <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
-                        school.status === 'sudah' ? 'bg-emerald-600' :
-                        school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
-                      }`}>
-                        {school.status.toUpperCase()}
-                      </span>
-                    </div>
-
-                    <h4 className="text-xs font-bold text-slate-900 leading-snug">
-                      {school.nama}
-                    </h4>
-
-                    <div className="text-[11px] text-slate-600 space-y-0.5">
-                      <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
-                      <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
-                    </div>
-
-                    <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-slate-200">
-                      <span>Guru: <strong>{school.totalGuru}</strong></span>
-                      <span>Siswa: <strong>{school.totalSiswa}</strong></span>
-                      <span>Responden: <strong className="text-blue-600">{school.respondenCount}</strong></span>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-          </MarkerClusterGroup>
-        </MapContainer>
-
-        {/* Floating Top-Left Status Summary Capsule */}
-        <div className="absolute top-4 left-4 z-20 bg-surface/90 backdrop-blur-md border border-border/80 p-2.5 rounded-xl shadow-lg flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-            <span className="font-medium text-text-secondary">Sudah:</span>
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full bg-emerald-500" />
+            <span className="text-text-secondary font-medium">Sudah:</span>
             <span className="font-bold text-text-primary">{statusStats.sudah}</span>
           </div>
 
-          <div className="h-3 w-px bg-border" />
-
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-            <span className="font-medium text-text-secondary">Sebagian:</span>
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full bg-amber-500" />
+            <span className="text-text-secondary font-medium">Sebagian:</span>
             <span className="font-bold text-text-primary">{statusStats.sebagian}</span>
           </div>
 
-          <div className="h-3 w-px bg-border" />
-
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
-            <span className="font-medium text-text-secondary">Belum:</span>
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full bg-rose-500" />
+            <span className="text-text-secondary font-medium">Belum:</span>
             <span className="font-bold text-text-primary">{statusStats.belum}</span>
           </div>
         </div>
 
-        {/* Floating Bottom-Left Total Indicator */}
-        <div className="absolute bottom-4 left-4 z-20 bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 border border-slate-700">
-          <Building2 className="h-3.5 w-3.5 text-indigo-400" />
-          <span>Menampilkan <strong>{filteredValidSchools.length}</strong> Titik Sekolah</span>
+        <div className="flex items-center gap-1 text-text-tertiary text-[11px] font-medium">
+          <Building2 className="h-3.5 w-3.5 text-primary" />
+          <span>Menampilkan <strong>{filteredValidSchools.length}</strong> dari {statusStats.total} Sekolah</span>
+        </div>
+      </div>
+
+      {/* Main Map Box & Detail Drawer */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        
+        {/* Left 3 Columns: Leaflet Map Container */}
+        <div className="lg:col-span-3 rounded-2xl border border-border bg-surface overflow-hidden shadow-card relative min-h-[560px]">
+          <MapContainer
+            center={mapCenter}
+            zoom={mapZoom}
+            scrollWheelZoom={true}
+            style={{ width: '100%', height: '560px', zIndex: 1 }}
+            className="rounded-2xl"
+          >
+            <MapFlyToController center={mapCenter} zoom={mapZoom} />
+
+            {/* OpenStreetMap Basemap */}
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            {/* Smart Marker Cluster Group */}
+            <MarkerClusterGroup
+              chunkedLoading
+              iconCreateFunction={createClusterCustomIcon}
+              maxClusterRadius={50}
+              spiderfyOnMaxZoom={true}
+              showCoverageOnHover={false}
+            >
+              {filteredValidSchools.map((school) => (
+                <Marker
+                  key={school.id}
+                  position={[school.latitude, school.longitude]}
+                  icon={createCustomMarkerIcon(school.status)}
+                  eventHandlers={{
+                    click: () => setSelectedSchool(school)
+                  }}
+                >
+                  <Popup className="custom-leaflet-popup">
+                    <div className="p-1 space-y-1.5 text-slate-800 max-w-xs font-sans">
+                      <div className="flex items-center justify-between gap-2 border-b pb-1">
+                        <span className="text-[10px] font-mono text-slate-500">NPSN: {school.npsn}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded text-white ${
+                          school.status === 'sudah' ? 'bg-emerald-600' :
+                          school.status === 'sebagian' ? 'bg-amber-500' : 'bg-rose-600'
+                        }`}>
+                          {school.status.toUpperCase()}
+                        </span>
+                      </div>
+
+                      <h4 className="text-xs font-bold text-slate-900 leading-snug">
+                        {school.nama}
+                      </h4>
+
+                      <div className="text-[11px] text-slate-600 space-y-0.5">
+                        <p>Kec. {school.kecamatan}, {school.kabupaten}</p>
+                        <p className="text-[10px] text-slate-400 line-clamp-1">{school.alamat}</p>
+                      </div>
+
+                      <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-slate-200">
+                        <span>Guru: <strong>{school.totalGuru}</strong></span>
+                        <span>Siswa: <strong>{school.totalSiswa}</strong></span>
+                        <span>Responden: <strong className="text-primary">{school.respondenCount}</strong></span>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MarkerClusterGroup>
+          </MapContainer>
         </div>
 
-        {/* Floating Right Detail Drawer Card */}
-        {selectedSchool && (
-          <div className="absolute top-4 right-4 bottom-4 z-20 w-80 bg-surface/95 backdrop-blur-md border border-border/80 rounded-2xl shadow-2xl p-4 flex flex-col justify-between animate-fade-in overflow-y-auto">
-            <div className="space-y-4">
+        {/* Right 1 Column: Solid Theme Detail Panel */}
+        <div className="space-y-3">
+          {selectedSchool ? (
+            <div className="p-4 rounded-2xl bg-surface border border-border shadow-card space-y-4 animate-fade-in font-sans">
               <div className="flex items-start justify-between gap-2 border-b border-border pb-3">
                 <div>
                   <span className="text-[10px] font-mono text-text-tertiary uppercase">NPSN: {selectedSchool.npsn}</span>
-                  <h3 className="text-sm font-bold font-display text-text-primary leading-snug">
+                  <h3 className="text-sm font-bold text-text-primary leading-snug">
                     {selectedSchool.nama}
                   </h3>
                 </div>
@@ -391,12 +385,12 @@ export default function SchoolMap() {
                 </button>
               </div>
 
-              <div className="space-y-2 text-xs">
+              <div className="space-y-2.5 text-xs">
                 <div className="flex justify-between items-center">
                   <span className="text-text-tertiary">Status Kuesioner:</span>
-                  <span className={`font-bold text-[10px] uppercase px-2 py-0.5 rounded ${
-                    selectedSchool.status === 'sudah' ? 'bg-emerald-500/10 text-emerald-600' :
-                    selectedSchool.status === 'sebagian' ? 'bg-amber-500/10 text-amber-600' : 'bg-rose-500/10 text-rose-600'
+                  <span className={`font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-md ${
+                    selectedSchool.status === 'sudah' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400' :
+                    selectedSchool.status === 'sebagian' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400'
                   }`}>
                     {selectedSchool.status}
                   </span>
@@ -417,47 +411,72 @@ export default function SchoolMap() {
                   <span className="font-semibold text-text-primary">SD {selectedSchool.statusSekolah}</span>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <span className="text-text-tertiary block mb-1">Alamat Jalan:</span>
-                  <p className="text-[11px] text-text-secondary bg-background p-2 rounded-xl border border-border/60">
+                  <p className="text-[11px] text-text-secondary bg-background p-2.5 rounded-xl border border-border leading-relaxed">
                     {selectedSchool.alamat}
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <div className="p-2.5 rounded-xl bg-background border border-border/80 text-center">
-                  <span className="text-[10px] text-text-tertiary">Total Guru</span>
+                <div className="p-2.5 rounded-xl bg-background border border-border text-center">
+                  <span className="text-[10px] text-text-tertiary font-medium">Total Guru</span>
                   <p className="text-sm font-bold text-text-primary">{selectedSchool.totalGuru}</p>
                 </div>
-                <div className="p-2.5 rounded-xl bg-background border border-border/80 text-center">
-                  <span className="text-[10px] text-text-tertiary">Total Siswa</span>
+                <div className="p-2.5 rounded-xl bg-background border border-border text-center">
+                  <span className="text-[10px] text-text-tertiary font-medium">Total Siswa</span>
                   <p className="text-sm font-bold text-text-primary">{selectedSchool.totalSiswa}</p>
                 </div>
               </div>
-            </div>
 
-            <div className="pt-4">
               <button
                 onClick={() => {
                   setMapCenter([selectedSchool.latitude, selectedSchool.longitude]);
                   setMapZoom(16);
                 }}
-                className="w-full py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-md hover:bg-primary-dark transition-all flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5"
               >
                 <MapPin className="h-3.5 w-3.5" />
                 <span>Zoom ke Lokasi Sekolah</span>
               </button>
             </div>
+          ) : (
+            <div className="p-6 rounded-2xl bg-surface border border-border shadow-card text-center space-y-3 min-h-[260px] flex flex-col items-center justify-center">
+              <Building2 className="h-8 w-8 text-primary opacity-60" />
+              <h4 className="text-xs font-bold text-text-primary">Pilih Sekolah di Peta</h4>
+              <p className="text-xs text-text-secondary max-w-xs leading-relaxed">
+                Klik salah satu titik sekolah di peta atau bulatan cluster untuk melihat rincian lokasi dan status kuesioner.
+              </p>
+            </div>
+          )}
+
+          {/* Quick Stats Box */}
+          <div className="p-4 rounded-2xl bg-surface border border-border shadow-card space-y-2.5 text-xs font-sans">
+            <h4 className="font-bold text-text-primary uppercase tracking-wider">Cakupan Wilayah Mitra</h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-text-secondary py-1 border-b border-border/50">
+                <span>Kab. Sidoarjo</span>
+                <span className="font-bold text-text-primary">588 SD</span>
+              </div>
+              <div className="flex justify-between items-center text-text-secondary py-1 border-b border-border/50">
+                <span>Kota Batu</span>
+                <span className="font-bold text-text-primary">81 SD</span>
+              </div>
+              <div className="flex justify-between items-center text-text-secondary py-1">
+                <span>Kab. Tuban</span>
+                <span className="font-bold text-text-primary">569 SD</span>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
 
       </div>
 
       {/* Modal Missing Coordinates Checklist */}
       {showMissingModal && (
         <div className="fixed inset-0 z-[9999] bg-black/75 flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl animate-scale-up">
+          <div className="bg-surface border border-border rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl animate-scale-up font-sans">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -484,7 +503,7 @@ export default function SchoolMap() {
                     <p className="font-bold text-text-primary">{sch.nama}</p>
                     <p className="text-[10px] text-text-tertiary">NPSN: {sch.npsn} | Kec. {sch.kecamatan}, {sch.kabupaten}</p>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 border border-rose-500/20">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200">
                     No Lat/Long
                   </span>
                 </div>
